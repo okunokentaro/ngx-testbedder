@@ -1,16 +1,8 @@
-import * as pathModule from 'path'
 import * as ts from 'typescript'
 
 import { Solver } from './solver';
 
 const findRoot = require('find-root')
-
-const typeScriptExtension = 'ts'
-const extensionSeparator = '.'
-
-const getFileDir = (pathWithFileName: string) => {
-  return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
-}
 
 export class Facade {
 
@@ -31,23 +23,14 @@ export class Facade {
 
   run() {
     const dispose = this.solver.addListenerOutput(obj => {
-      const pathsExcludeNodeModules = obj.pathsOfAllFiles.filter(_path => {
-        return /^\./.test(_path)
-      })
-
-      const absoluteFilePaths = pathsExcludeNodeModules.map(_path => {
-        const fileDir      = getFileDir(obj.filePath)
-        return [
-          pathModule.resolve(fileDir, _path),
-          typeScriptExtension
-        ].join(extensionSeparator)
-      })
-
-      absoluteFilePaths.forEach(nextFilePath => {
+      obj.absoluteFilePaths.forEach(nextFilePath => {
         const rootPath = (() => {
-          if (!Array.from(this.rootPaths).some(_rootPath => nextFilePath.includes(_rootPath))) {
+          const rootPathIsChecked = Array.from(this.rootPaths)
+            .some(_rootPath => nextFilePath.includes(_rootPath))
+          if (!rootPathIsChecked) {
             return findRoot(nextFilePath)
           }
+
           return Array.from(this.rootPaths)
             .map(v => nextFilePath.match(v))
             .filter(v => !!v)[0][0]
@@ -66,6 +49,8 @@ export class Facade {
           this.solver.outputEmitter
         )
         newSolver.run()
+
+        console.log(nextFilePath);
 
         this.solved.add(nextFilePath)
       })

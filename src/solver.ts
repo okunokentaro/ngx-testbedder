@@ -8,8 +8,11 @@ import { ComponentDetector } from './component-detector';
 import { TextRangeTuple } from './main';
 import { EventEmitter } from 'events';
 
-const isDTs = (fileName: string) => {
-  return fileName.substr(-5) === '.d.ts'
+const typeScriptExtension = 'ts'
+const extensionSeparator  = '.'
+
+const getFileDir = (pathWithFileName: string) => {
+  return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
 }
 
 export class Solver {
@@ -56,9 +59,21 @@ export class Solver {
     const importDetector = new ImportDetector(thisSource, params)
     const pathsOfAllFiles = importDetector.detect()
 
+    const pathsExcludeNodeModules = pathsOfAllFiles.filter(_path => {
+      return /^\./.test(_path)
+    })
+
+    const absoluteFilePaths = pathsExcludeNodeModules.map(_path => {
+      const fileDir = getFileDir(this.filePath)
+      return [
+        pathModule.resolve(fileDir, _path),
+        typeScriptExtension
+      ].join(extensionSeparator)
+    })
+
     if (0 < pathsOfAllFiles.length) {
       this.outputEmitter.emit('output', {
-        pathsOfAllFiles,
+        absoluteFilePaths,
         filePath: this.filePath
       })
     }
@@ -67,7 +82,7 @@ export class Solver {
   /**
    * @returns disposeFunction
    */
-  addListenerOutput(callback: (v: {pathsOfAllFiles: string[], filePath: string}) => void): () => void {
+  addListenerOutput(callback: (v: {absoluteFilePaths: string[], filePath: string}) => void): () => void {
     const disposer = this.outputEmitter.on('output', callback)
     return () => disposer.removeListener('output', callback)
   }
