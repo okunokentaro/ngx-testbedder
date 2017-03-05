@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "dependencies": {
+    "find-root": "^1.0.0",
+    "packpath": "^0.1.0",
     "typescript": "^2.2.1",
     "yargs": "^7.0.1"
   },
