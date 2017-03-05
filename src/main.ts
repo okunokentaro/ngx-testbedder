@@ -1,6 +1,13 @@
 import * as ts from 'typescript'
 declare const require: any
 
+const isClassDeclaration = (node: ts.Node): node is ts.ClassDeclaration => {
+  return node.kind === ts.SyntaxKind.ClassDeclaration
+}
+const isCallExpression = (node: ts.Node): node is ts.CallExpression => {
+  return node.kind === ts.SyntaxKind.CallExpression
+}
+
 class Visitor {
 
   constructor(files: string[], tsconfig: any) {
@@ -16,21 +23,17 @@ class Visitor {
 
 
   private visit(node: ts.Node) {
-    if (node.kind === ts.SyntaxKind.ClassDeclaration) {
-      const classDefNode = node as ts.ClassDeclaration
-      if (classDefNode.decorators) {
-        Array.from(classDefNode.decorators).forEach(decoratorNode => {
-          ts.forEachChild(decoratorNode, this.visitDecorators.bind(this))
-        })
-      }
+    if (isClassDeclaration(node) && node.decorators) {
+      Array.from(node.decorators).forEach(decoNode => {
+        ts.forEachChild(decoNode, this.visitDecorators.bind(this))
+      })
     }
     ts.forEachChild(node, this.visit.bind(this))
   }
 
   private visitDecorators(node: ts.Node) {
-    if (node.kind === ts.SyntaxKind.CallExpression) {
-      const callNode      = node as ts.CallExpression
-      const decoratorName = (<ts.Identifier>callNode.expression).text
+    if (isCallExpression(node)) {
+      const decoratorName = (<ts.Identifier>node.expression).text
       console.log('decoratorName', decoratorName)
     }
     ts.forEachChild(node, this.visitDecorators.bind(this))
