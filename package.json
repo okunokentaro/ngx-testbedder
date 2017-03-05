@@ -1,0 +1,13 @@
+{
+  "name": "ng-mockupper",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "OKUNOKENTARO <okunokentaro@me.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^2.2.1"
+  },
+  "devDependencies": {
+    "webpack": "^2.2.1"
+  }
+}
