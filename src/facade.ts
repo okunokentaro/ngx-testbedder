@@ -31,16 +31,19 @@ export class Facade {
 
   run() {
     const dispose = this.solver.addListenerOutput(obj => {
-      obj.pathsOfAllFiles.forEach(_path => {
-        if (!/^\./.test(_path)) {
-          return
-        }
+      const pathsExcludeNodeModules = obj.pathsOfAllFiles.filter(_path => {
+        return /^\./.test(_path)
+      })
 
+      const absoluteFilePaths = pathsExcludeNodeModules.map(_path => {
         const fileDir      = getFileDir(obj.filePath)
-        const nextFilePath = [
+        return [
           pathModule.resolve(fileDir, _path),
           typeScriptExtension
         ].join(extensionSeparator)
+      })
+
+      absoluteFilePaths.forEach(nextFilePath => {
         const rootPath = (() => {
           if (!Array.from(this.rootPaths).some(_rootPath => nextFilePath.includes(_rootPath))) {
             return findRoot(nextFilePath)
@@ -56,7 +59,6 @@ export class Facade {
           return
         }
 
-        console.log(nextFilePath);
         const newSolver = new Solver(
           nextFilePath,
           this.program,
