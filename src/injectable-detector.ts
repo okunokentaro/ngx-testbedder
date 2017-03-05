@@ -1,28 +1,21 @@
 import * as ts from 'typescript'
 import { EventEmitter } from 'events';
+import { isClassDeclaration, isCallExpression } from './type-guards';
+import { TextRangeTuple } from './main';
+import { AbstractDetector } from './abstract-detector';
 
 interface ClassPosition {
-  fileName:      string
   position:      TextRangeTuple
   hasInjectable: boolean
 }
 
-type TextRangeTuple = [number, number]
 
 const INJECTABLE_NAME   = 'Injectable'
 const DETECT_INJECTABLE = 'detectInjectable'
 
-const isClassDeclaration = (node: ts.Node): node is ts.ClassDeclaration => {
-  return node.kind === ts.SyntaxKind.ClassDeclaration
-}
-const isCallExpression = (node: ts.Node): node is ts.CallExpression => {
-  return node.kind === ts.SyntaxKind.CallExpression
-}
-
-export class InjectableDetector {
+export class InjectableDetector extends AbstractDetector {
 
   private classPositions = [] as ClassPosition[]
-  private fileName: string
 
   private emitter = new EventEmitter()
 
@@ -34,13 +27,19 @@ export class InjectableDetector {
     })
   }
 
-  constructor(private sourceFile: ts.SourceFile) {
-    this.fileName = this.sourceFile.fileName
+  constructor(
+    private sourceFile: ts.SourceFile
+  ) {
+    super()
   }
 
-  detect(): any[] {
+  detect(): TextRangeTuple[] {
     ts.forEachChild(this.sourceFile, node => this.visit(node))
-    return this.classPositions
+    return this.classPositions.map(pos => {
+      if (pos.hasInjectable) {
+        return pos.position
+      }
+    })
   }
 
   private visit(node: ts.Node) {
@@ -51,7 +50,6 @@ export class InjectableDetector {
 
     // This node is a class declarations.
     this.classPositions.push({
-      fileName:      this.fileName,
       position:      [node.pos, node.end],
       hasInjectable: false,
     })

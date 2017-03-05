@@ -20,12 +20,18 @@ class BService {
 
 }
 
-@Injectable()
+class CService {
+
+}
+
+class DService {
+
+}
+
 class CCCC {
 
   constructor(
     private aService: AService,
-    private bService: BService,
   ) {
     //
   }
@@ -36,7 +42,15 @@ class CCCC {
 
 }
 
+@Injectable()
 class DDDD {
+
+  constructor(
+    public cService: CService,
+    protected dService: DService,
+  ) {
+
+  }
 
   methodA(): string {
     return 'string'
