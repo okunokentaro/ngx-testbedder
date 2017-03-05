@@ -1,5 +1,8 @@
 /* tslint:disable:max-classes-per-file */
 
+import { AService, BService } from './sample03';
+import { CService, DService } from './sample04';
+
 export function Injectable() {
   return (cls: any) => {
     return cls
@@ -12,24 +15,12 @@ function OtherDecorator() {
   }
 }
 
-class AService {
-
-}
-
-class BService {
-
-}
-
-class CService {
-
-}
-
 @Injectable()
 class CCCC {
 
   constructor(
     private aService: AService,
-    private bService: BService,
+    private bService: CService,
   ) {
     //
   }
