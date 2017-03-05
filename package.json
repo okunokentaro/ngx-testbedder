@@ -9,5 +9,8 @@
     "webpack": "^2.2.1"
   },
   "license": "MIT",
-  "main": "index.js"
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc -p ./ && cp ./sample/tsconfig.json ./dist/sample/tsconfig.json && node ./dist/src/main.js"
+  }
 }
