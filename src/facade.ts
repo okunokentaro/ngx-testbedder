@@ -14,7 +14,8 @@ const getFileDir = (pathWithFileName: string) => {
 export class Facade {
 
   private solver: Solver
-  private solved = [] as string[]
+  private solved    = new Set<string>()
+  private rootPaths = new Set<string>()
 
   constructor(
     private filePath: string,
@@ -36,16 +37,31 @@ export class Facade {
           pathModule.resolve(fileDir, _path),
           typeScriptExtension
         ].join(extensionSeparator)
-        const rootPath     = findRoot(nextFilePath)
+        const rootPath = (() => {
+          if (!Array.from(this.rootPaths).some(_rootPath => nextFilePath.includes(_rootPath))) {
+            return findRoot(nextFilePath)
+          }
+          return Array.from(this.rootPaths)
+            .map(v => nextFilePath.match(v))
+            .filter(v => !!v)[0][0]
+        })()
 
-        if (this.solved.includes(nextFilePath)) {
+        this.rootPaths.add(rootPath)
+
+        if (Array.from(this.solved).includes(nextFilePath)) {
           return
         }
 
         console.log(nextFilePath);
-        const newSolver = new Solver(nextFilePath, this.tsconfig, rootPath, this.solver.outputEmitter)
+        const newSolver = new Solver(
+          nextFilePath,
+          this.tsconfig,
+          rootPath,
+          this.solver.outputEmitter
+        )
         newSolver.run()
-        this.solved.push(nextFilePath)
+
+        this.solved.add(nextFilePath)
       })
     })
     this.solver.run()
