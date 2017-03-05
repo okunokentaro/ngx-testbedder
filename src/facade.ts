@@ -20,12 +20,12 @@ const getFileDir = (pathWithFileName: string) => {
 export class Facade {
 
   private sink = {
-    injectable: [] as {path: string, ranges: TextRangeTuple[]}[],
-    component:  [] as {path: string, ranges: TextRangeTuple[]}[],
+    injectable: [] as Array<{path: string, ranges: TextRangeTuple[]}>,
+    component:  [] as Array<{path: string, ranges: TextRangeTuple[]}>,
   }
 
   constructor(private filePath: string, private tsconfig: any, private projectRoot: string) {
-    console.log('filePath', filePath);
+    console.info('filePath', filePath);
   }
 
   run() {
@@ -56,12 +56,12 @@ export class Facade {
     if (0 < pathsOfAllFiles.length) {
       pathsOfAllFiles.forEach(_path => {
         if (!/^\./.test(_path)) {
-          console.log('module!!', _path);
           return
         }
-        const fileDir = getFileDir(this.filePath)
+        const fileDir      = getFileDir(this.filePath)
         const nextFilePath = `${pathModule.resolve(fileDir, _path)}.ts`
-        const rootPath = findRoot(nextFilePath)
+        const rootPath     = findRoot(nextFilePath)
+
         const newFacade = new Facade(nextFilePath, this.tsconfig, rootPath)
         newFacade.run()
       })
