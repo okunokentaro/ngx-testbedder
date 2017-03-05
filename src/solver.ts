@@ -8,14 +8,8 @@ import { ComponentDetector } from './component-detector';
 import { TextRangeTuple } from './main';
 import { EventEmitter } from 'events';
 
-const findRoot = require('find-root')
-
 const isDTs = (fileName: string) => {
   return fileName.substr(-5) === '.d.ts'
-}
-
-const getFileDir = (pathWithFileName: string) => {
-  return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
 }
 
 export class Solver {
@@ -65,17 +59,9 @@ export class Solver {
     const pathsOfAllFiles = importDetector.detect()
 
     if (0 < pathsOfAllFiles.length) {
-      pathsOfAllFiles.forEach(_path => {
-        if (!/^\./.test(_path)) {
-          return
-        }
-        const fileDir      = getFileDir(this.filePath)
-        const nextFilePath = `${pathModule.resolve(fileDir, _path)}.ts`
-        const rootPath     = findRoot(nextFilePath)
-
-        const newSolver = new Solver(nextFilePath, this.tsconfig, rootPath, this.outputEmitter)
-        this.outputEmitter.emit('output', nextFilePath)
-        newSolver.run()
+      this.outputEmitter.emit('output', {
+        pathsOfAllFiles,
+        filePath: this.filePath
       })
     }
   }
@@ -83,19 +69,22 @@ export class Solver {
   /**
    * @returns disposeFunction
    */
-  addListenerOutput(callback: (v: string) => void): () => void {
+  addListenerOutput(callback: (v: {pathsOfAllFiles: string[], filePath: string}) => void): () => void {
     const disposer = this.outputEmitter.on('output', callback)
     return () => disposer.removeListener('output', callback)
   }
 
   private filterThisSource(program: ts.Program): ts.SourceFile {
-    return program.getSourceFiles()
+    const source = program.getSourceFiles()
       .filter(src => !isDTs(src.fileName))
-      .filter(src => {
+      .find(src => {
         const argPath    = this.getFullPath(this.filePath)
         const sourcePath = this.getFullPath(src.fileName)
         return sourcePath === argPath
-      })[0]
+      })
+
+    console.assert(!!source, `Source "${this.filePath}" is not found`)
+    return source
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {
