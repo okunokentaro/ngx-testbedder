@@ -1,7 +1,7 @@
 import * as ts from 'typescript'
 
-import { isTypeReference, isImportDeclaration, isNamedImports } from './type-guards';
-import { AbstractDetector } from './abstract-detector';
+import { isTypeReference, isImportDeclaration, isNamedImports } from './type-guards'
+import { AbstractDetector } from './abstract-detector'
 
 export class ImportDetector extends AbstractDetector {
 
@@ -9,7 +9,7 @@ export class ImportDetector extends AbstractDetector {
 
   constructor(
     private sourceFile: ts.SourceFile,
-    private params: string[]
+    private params: string[],
   ) {
     super()
   }

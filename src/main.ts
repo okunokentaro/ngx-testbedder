@@ -1,8 +1,8 @@
 import * as ts from 'typescript'
 
-import { InjectableDetector } from './injectable-detector';
-import { ConstructorParameterDetector } from './constructor-parameter-detector';
-import { ImportDetector } from './import-detector';
+import { InjectableDetector } from './injectable-detector'
+import { ConstructorParameterDetector } from './constructor-parameter-detector'
+import { ImportDetector } from './import-detector'
 
 export type TextRangeTuple = [number, number]
 
@@ -27,7 +27,7 @@ class Facade {
           return
         }
         const detector = new InjectableDetector(sourceFile)
-        const result = detector.detect();
+        const result = detector.detect()
         return {
           fileName: sourceFile.fileName,
           detected: result,
@@ -53,7 +53,7 @@ class Facade {
         }
         const constructorParameterDetector = new ConstructorParameterDetector(
           sourceFile,
-          classPositions.detected
+          classPositions.detected,
         )
         const params = constructorParameterDetector.detect()
         const importDetector = new ImportDetector(sourceFile, params)
@@ -62,7 +62,7 @@ class Facade {
       .filter(item => !!item)
       .filter(item => 0 < item.length)
 
-    console.log(pathsOfAllFiles);
+    console.info(pathsOfAllFiles)
   }
 
 }

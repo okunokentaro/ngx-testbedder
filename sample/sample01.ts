@@ -1,7 +1,7 @@
 /* tslint:disable:max-classes-per-file */
 
-import { AService, BService } from './sample03';
-import { CService, DService } from './sample04';
+import { AService, BService } from './sample03'
+import { CService, DService } from './sample04'
 
 export function Injectable() {
   return (cls: any) => {

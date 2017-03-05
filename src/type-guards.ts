@@ -25,5 +25,5 @@ export const isImportSpecifier = (node: ts.Node): node is ts.ImportSpecifier => 
 }
 
 export const isNamedImports = (namedBindings: ts.NamedImportBindings): namedBindings is ts.NamedImports => {
-  return !!(namedBindings as any)['elements']
+  return !!(namedBindings as any).elements
 }

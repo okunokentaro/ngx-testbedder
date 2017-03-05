@@ -6,6 +6,10 @@
     "arrow-parens": [true, "ban-single-arg-parens"],
     "no-console": [true, "log", "error"],
     "member-access": false,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "ordered-imports": false,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
     "typedef-whitespace": [
       true,
       {
@@ -19,7 +23,7 @@
         "call-signature": "onespace",
         "index-signature": "onespace",
         "parameter": "onespace",
-        "property-declaration": "onespace",
+        "property-declaration": "space",
         "variable-declaration": "onespace"
       }
     ]

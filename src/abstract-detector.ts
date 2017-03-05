@@ -1,4 +1,4 @@
-import { TextRangeTuple } from './main';
+import { TextRangeTuple } from './main'
 
 export class AbstractDetector {
 

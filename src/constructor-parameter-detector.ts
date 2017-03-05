@@ -1,7 +1,7 @@
 import * as ts from 'typescript'
-import { isConstructor, isTypeReference } from './type-guards';
-import { TextRangeTuple } from './main';
-import { AbstractDetector } from './abstract-detector';
+import { isConstructor, isTypeReference } from './type-guards'
+import { TextRangeTuple } from './main'
+import { AbstractDetector } from './abstract-detector'
 
 export class ConstructorParameterDetector extends AbstractDetector {
 
@@ -9,7 +9,7 @@ export class ConstructorParameterDetector extends AbstractDetector {
 
   constructor(
     private sourceFile: ts.SourceFile,
-    private detectedRanges: TextRangeTuple[]
+    private detectedRanges: TextRangeTuple[],
   ) {
     super()
   }
@@ -36,7 +36,7 @@ export class ConstructorParameterDetector extends AbstractDetector {
 
   private visitParameters(node: ts.Node) {
     if (isTypeReference(node)) {
-      const injectClassName = (node.typeName as ts.Identifier).text;
+      const injectClassName = (node.typeName as ts.Identifier).text
       this.injectClassNames.push(injectClassName)
     }
   }
