@@ -1,6 +1,6 @@
 /* tslint:disable:max-classes-per-file */
 
-function Injectable() {
+export function Injectable() {
   return (cls: any) => {
     return cls
   }
