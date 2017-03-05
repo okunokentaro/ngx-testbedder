@@ -12,6 +12,7 @@ export class ConstructorParameterDetector extends AbstractDetector {
     private detectedRanges: TextRangeTuple[],
   ) {
     super()
+    console.assert(0 < this.detectedRanges.length)
   }
 
   detect(): string[] {
@@ -21,12 +22,11 @@ export class ConstructorParameterDetector extends AbstractDetector {
 
   private visit(node: ts.Node) {
     if (isConstructor(node)) {
-      const inInRange = this.detectedRanges.some(range => {
-        return this.isInRange(range, [node.pos, node.end])
-      })
+      const inInRange = this.detectedRanges.some(range => this.isInRange(range, [node.pos, node.end]))
       if (!inInRange) {
         return
       }
+
       Array.from(node.parameters).forEach(paramNode => {
         ts.forEachChild(paramNode, _node => this.visitParameters(_node))
       })
