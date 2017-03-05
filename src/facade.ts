@@ -13,7 +13,11 @@ export class Facade {
   }
 
   run() {
+    const dispose = this.solver.addListenerOutput((v: string) => {
+      console.log('output', v)
+    })
     this.solver.run()
+    dispose()
   }
 
 }

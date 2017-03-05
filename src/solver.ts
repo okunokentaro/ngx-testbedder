@@ -6,6 +6,7 @@ import { ConstructorParameterDetector } from './constructor-parameter-detector'
 import { InjectableDetector } from './injectable-detector'
 import { ComponentDetector } from './component-detector';
 import { TextRangeTuple } from './main';
+import { EventEmitter } from 'events';
 
 const findRoot = require('find-root')
 
@@ -19,13 +20,23 @@ const getFileDir = (pathWithFileName: string) => {
 
 export class Solver {
 
+  outputEmitter = new EventEmitter()
+
   private sink = {
     injectable: [] as Array<{path: string, ranges: TextRangeTuple[]}>,
     component:  [] as Array<{path: string, ranges: TextRangeTuple[]}>,
   }
 
-  constructor(private filePath: string, private tsconfig: any, private projectRoot: string) {
-    console.info('filePath', filePath);
+  constructor(
+    private filePath: string,
+    private tsconfig: any,
+    private projectRoot: string,
+    emitter?: EventEmitter,
+  ) {
+    if (!emitter) {
+      this.outputEmitter = new EventEmitter()
+    }
+    this.outputEmitter = !!emitter ? emitter : new EventEmitter()
   }
 
   run() {
@@ -62,10 +73,19 @@ export class Solver {
         const nextFilePath = `${pathModule.resolve(fileDir, _path)}.ts`
         const rootPath     = findRoot(nextFilePath)
 
-        const newSolver = new Solver(nextFilePath, this.tsconfig, rootPath)
+        const newSolver = new Solver(nextFilePath, this.tsconfig, rootPath, this.outputEmitter)
+        this.outputEmitter.emit('output', nextFilePath)
         newSolver.run()
       })
     }
+  }
+
+  /**
+   * @returns disposeFunction
+   */
+  addListenerOutput(callback: (v: string) => void): () => void {
+    const disposer = this.outputEmitter.on('output', callback)
+    return () => disposer.removeListener('output', callback)
   }
 
   private filterThisSource(program: ts.Program): ts.SourceFile {
