@@ -30,9 +30,6 @@ export class Solver {
     private projectRoot: string,
     emitter?: EventEmitter,
   ) {
-    if (!emitter) {
-      this.outputEmitter = new EventEmitter()
-    }
     this.outputEmitter = !!emitter ? emitter : new EventEmitter()
   }
 
@@ -40,9 +37,9 @@ export class Solver {
     const thisSource = this.program.getSourceFile(this.filePath)
     this.detectInjectableAndComponent(thisSource)
 
-    const path = this.getFullPath(thisSource.fileName)
-
     const mergedRanges = this.sink.injectable.concat(this.sink.component)
+    const path         = this.getFullPath(thisSource.fileName)
+
     const targetClassDetectedPositions = mergedRanges
       .filter(item => item.path === path)
 
@@ -50,28 +47,21 @@ export class Solver {
       return output.concat(v.ranges)
     }, [] as TextRangeTuple[])
 
-    const constructorParameterDetector = new ConstructorParameterDetector(
-      thisSource,
-      classPositions,
-    )
+    const params   = new ConstructorParameterDetector(thisSource, classPositions).detect()
+    const detector = new ImportDetector(thisSource, params)
+    const paths    = detector.detect()
 
-    const params = constructorParameterDetector.detect()
-    const importDetector = new ImportDetector(thisSource, params)
-    const pathsOfAllFiles = importDetector.detect()
-
-    const pathsExcludeNodeModules = pathsOfAllFiles.filter(_path => {
+    const pathsExcludeNodeModules = paths.filter(_path => {
       return /^\./.test(_path)
     })
 
     const absoluteFilePaths = pathsExcludeNodeModules.map(_path => {
       const fileDir = getFileDir(this.filePath)
-      return [
-        pathModule.resolve(fileDir, _path),
-        typeScriptExtension
-      ].join(extensionSeparator)
+      return [pathModule.resolve(fileDir, _path), typeScriptExtension]
+        .join(extensionSeparator)
     })
 
-    if (0 < pathsOfAllFiles.length) {
+    if (0 < absoluteFilePaths.length) {
       this.outputEmitter.emit('output', {
         absoluteFilePaths,
         filePath: this.filePath
@@ -88,19 +78,19 @@ export class Solver {
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {
-    const injectableDetector = new InjectableDetector(src)
-    const injectableRanges = injectableDetector.detect()
-    this.sink.injectable.push({
-      path: this.getFullPath(src.fileName),
-      ranges: injectableRanges,
-    })
+    {
+      const detector = new InjectableDetector(src)
+      const path     = this.getFullPath(src.fileName)
+      const ranges   = detector.detect()
+      this.sink.injectable.push({path, ranges})
+    }
 
-    const componentDetector = new ComponentDetector(src)
-    const componentRanges = componentDetector.detect()
-    this.sink.component.push({
-      path: this.getFullPath(src.fileName),
-      ranges: componentRanges,
-    })
+    {
+      const detector = new ComponentDetector(src)
+      const path     = this.getFullPath(src.fileName)
+      const ranges   = detector.detect()
+      this.sink.component.push({path, ranges})
+    }
   }
 
   private getFullPath(partialPath: string): string {

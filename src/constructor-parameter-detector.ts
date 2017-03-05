@@ -8,7 +8,7 @@ export class ConstructorParameterDetector extends AbstractDetector {
   private injectClassNames = [] as string[]
 
   constructor(
-    private sourceFile: ts.SourceFile,
+    private sourceFile:     ts.SourceFile,
     private detectedRanges: TextRangeTuple[],
   ) {
     super()
@@ -22,7 +22,9 @@ export class ConstructorParameterDetector extends AbstractDetector {
 
   private visit(node: ts.Node) {
     if (isConstructor(node)) {
-      const inInRange = this.detectedRanges.some(range => this.isInRange(range, [node.pos, node.end]))
+      const inInRange = this.detectedRanges.some(range => {
+        return this.isInRange(range, [node.pos, node.end])
+      })
       if (!inInRange) {
         return
       }
