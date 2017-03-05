@@ -4,8 +4,23 @@ function Injectable() {
   };
 }
 
+function OtherDecorator() {
+  return (cls: any) => {
+    return cls
+  };
+}
+
 @Injectable()
-class C {
+@OtherDecorator()
+class CCCC {
+
+  methodA(): string {
+    return 'string'
+  }
+
+}
+
+class DDDD {
 
   methodA(): string {
     return 'string'
