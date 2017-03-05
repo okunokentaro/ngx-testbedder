@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "dependencies": {
-    "typescript": "^2.2.1"
+    "typescript": "^2.2.1",
+    "yargs": "^7.0.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.5",
+    "@types/yargs": "^6.6.0",
     "tslint": "^4.5.1"
   },
   "license": "MIT",
