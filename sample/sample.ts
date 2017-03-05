@@ -12,9 +12,23 @@ function OtherDecorator() {
   }
 }
 
+class AService {
+
+}
+
+class BService {
+
+}
+
 @Injectable()
-@OtherDecorator()
 class CCCC {
+
+  constructor(
+    private aService: AService,
+    private bService: BService,
+  ) {
+    //
+  }
 
   methodA(): string {
     return 'string'

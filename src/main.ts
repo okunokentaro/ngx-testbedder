@@ -1,5 +1,10 @@
 import * as ts from 'typescript'
+import { EventEmitter } from 'events';
 declare const require: any
+
+type TextRangeTuple = [number, number]
+
+const injectableName = 'Injectable'
 
 const isClassDeclaration = (node: ts.Node): node is ts.ClassDeclaration => {
   return node.kind === ts.SyntaxKind.ClassDeclaration
@@ -9,6 +14,22 @@ const isCallExpression = (node: ts.Node): node is ts.CallExpression => {
 }
 
 class Visitor {
+
+  private classPositions = [] as {
+    position: TextRangeTuple,
+    hasInjectable: boolean,
+  }[]
+
+  private emitter = new EventEmitter()
+
+  private listener = (pos: TextRangeTuple) => {
+    this.classPositions.forEach(v => {
+      if (v.position[0] <= pos[0] && pos[1] <= v.position[1]) {
+        v.hasInjectable = true
+      }
+    })
+    console.log(this.classPositions)
+  }
 
   constructor(files: string[], tsconfig: any) {
     const program  = ts.createProgram(files, tsconfig)
@@ -23,18 +44,32 @@ class Visitor {
 
   private visit(node: ts.Node) {
     if (isClassDeclaration(node) && node.decorators) {
+      this.classPositions.push({
+        position: [node.pos, node.end],
+        hasInjectable: false,
+      })
       Array.from(node.decorators).forEach(decoNode => {
-        ts.forEachChild(decoNode, this.visitDecorators.bind(this))
+        this.hasInjectable(decoNode)
       })
     }
     ts.forEachChild(node, this.visit.bind(this))
   }
 
+  private hasInjectable(node: ts.Decorator): boolean {
+    this.emitter.on('detectInjectable', this.listener)
+
+    ts.forEachChild(node, this.visitDecorators.bind(this))
+    return false
+  }
+
   private visitDecorators(node: ts.Node) {
     if (isCallExpression(node)) {
       const decoratorName = (node.expression as ts.Identifier).text
-      console.info('decoratorName', decoratorName)
+      if (decoratorName === injectableName) {
+        this.emitter.emit('detectInjectable', [node.pos, node.end])
+      }
     }
+    this.emitter.removeListener('detectInjectable', this.listener)
     ts.forEachChild(node, this.visitDecorators.bind(this))
   }
 
