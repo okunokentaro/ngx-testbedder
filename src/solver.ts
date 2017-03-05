@@ -23,7 +23,7 @@ export class Solver {
 
   constructor(
     private filePath: string,
-    private tsconfig: any,
+    private program: ts.Program,
     private projectRoot: string,
     emitter?: EventEmitter,
   ) {
@@ -34,9 +34,7 @@ export class Solver {
   }
 
   run() {
-    const program = ts.createProgram([this.filePath], this.tsconfig)
-
-    const thisSource = this.filterThisSource(program)
+    const thisSource = this.program.getSourceFile(this.filePath)
     this.detectInjectableAndComponent(thisSource)
 
     const path = this.getFullPath(thisSource.fileName)
@@ -72,19 +70,6 @@ export class Solver {
   addListenerOutput(callback: (v: {pathsOfAllFiles: string[], filePath: string}) => void): () => void {
     const disposer = this.outputEmitter.on('output', callback)
     return () => disposer.removeListener('output', callback)
-  }
-
-  private filterThisSource(program: ts.Program): ts.SourceFile {
-    const source = program.getSourceFiles()
-      .filter(src => !isDTs(src.fileName))
-      .find(src => {
-        const argPath    = this.getFullPath(this.filePath)
-        const sourcePath = this.getFullPath(src.fileName)
-        return sourcePath === argPath
-      })
-
-    console.assert(!!source, `Source "${this.filePath}" is not found`)
-    return source
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {

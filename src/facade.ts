@@ -1,4 +1,5 @@
 import * as pathModule from 'path'
+import * as ts from 'typescript'
 
 import { Solver } from './solver';
 
@@ -13,6 +14,8 @@ const getFileDir = (pathWithFileName: string) => {
 
 export class Facade {
 
+  private program: ts.Program;
+
   private solver: Solver
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
@@ -22,7 +25,8 @@ export class Facade {
     private tsconfig: any,
     private projectRoot: string,
   ) {
-    this.solver = new Solver(filePath, tsconfig, projectRoot)
+    this.program = ts.createProgram([this.filePath], this.tsconfig)
+    this.solver = new Solver(filePath, this.program, projectRoot)
   }
 
   run() {
@@ -55,7 +59,7 @@ export class Facade {
         console.log(nextFilePath);
         const newSolver = new Solver(
           nextFilePath,
-          this.tsconfig,
+          this.program,
           rootPath,
           this.solver.outputEmitter
         )
