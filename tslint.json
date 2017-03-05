@@ -1,0 +1,27 @@
+{
+  "extends": "tslint:latest",
+  "rules": {
+    "semicolon": [true, "never"],
+    "quotemark": [true, "single"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "no-console": [true, "log", "error"],
+    "member-access": false,
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "onespace",
+        "index-signature": "onespace",
+        "parameter": "onespace",
+        "property-declaration": "onespace",
+        "variable-declaration": "onespace"
+      }
+    ]
+  }
+}

@@ -21,7 +21,6 @@ class Visitor {
     }
   }
 
-
   private visit(node: ts.Node) {
     if (isClassDeclaration(node) && node.decorators) {
       Array.from(node.decorators).forEach(decoNode => {
@@ -33,8 +32,8 @@ class Visitor {
 
   private visitDecorators(node: ts.Node) {
     if (isCallExpression(node)) {
-      const decoratorName = (<ts.Identifier>node.expression).text
-      console.log('decoratorName', decoratorName)
+      const decoratorName = (node.expression as ts.Identifier).text
+      console.info('decoratorName', decoratorName)
     }
     ts.forEachChild(node, this.visitDecorators.bind(this))
   }
@@ -44,7 +43,7 @@ class Visitor {
 const main = () => {
   const files    = ['sample/sample.ts']
   const tsconfig = require('../sample/tsconfig.json')
-  new Visitor(files, tsconfig)
+  return new Visitor(files, tsconfig)
 }
 
 main()

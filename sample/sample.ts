@@ -1,13 +1,15 @@
+/* tslint:disable:max-classes-per-file */
+
 function Injectable() {
   return (cls: any) => {
     return cls
-  };
+  }
 }
 
 function OtherDecorator() {
   return (cls: any) => {
     return cls
-  };
+  }
 }
 
 @Injectable()
