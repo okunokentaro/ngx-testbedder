@@ -2,7 +2,7 @@ import * as ts from 'typescript'
 import * as pathModule from 'path'
 
 import { Solver } from './solver';
-import { TreeBuilder } from './tree-builder';
+import { TreeBuilder, DependencyNode } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 
 const findRoot = require('find-root')
@@ -10,9 +10,10 @@ const findRoot = require('find-root')
 export class Facade {
 
   private filePath: string
-  private program: ts.Program
+  private program:  ts.Program
+  private solver:   Solver
+  private builder:  TreeBuilder
 
-  private solver: Solver
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
 
@@ -23,48 +24,20 @@ export class Facade {
     private renderer: AbstractRenderer,
   ) {
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
-    this.program = ts.createProgram([this.filePath], this.tsconfig)
-    this.solver  = new Solver(this.filePath, this.program, projectRoot, 1)
+    this.program  = ts.createProgram([this.filePath], this.tsconfig)
+    this.solver   = new Solver(this.filePath, this.program, projectRoot, 1)
+    this.builder  = new TreeBuilder()
   }
 
   run(): string {
-    const builder = new TreeBuilder()
 
     const dispose = this.solver.addListenerOutput(obj => {
-      builder.rawNodes.push(obj)
-
-      obj.dependenciesPathsAndNames
-        .map(pathAndName => {
-          const nextFilePath = pathAndName.path
-          const rootPath     = this.getRootPath(nextFilePath)
-          this.rootPaths.add(rootPath)
-
-          const nextLevel = obj.level + 1
-
-          return {
-            nextFilePath,
-            rootPath,
-            nextLevel
-          }
-        })
-        .filter((v) => !Array.from(this.solved).includes(v.nextFilePath))
-        .forEach(solverParams => {
-          const newSolver = new Solver(
-            solverParams.nextFilePath,
-            this.program,
-            solverParams.rootPath,
-            solverParams.nextLevel,
-            this.solver.outputEmitter
-          )
-          newSolver.run()
-
-          this.solved.add(solverParams.nextFilePath)
-        })
+      this.dealWithSolved(obj)
     })
     this.solver.run()
     dispose()
 
-    const built = builder.build()
+    const built = this.builder.build()
     return this.renderer.render(built)
   }
 
@@ -78,6 +51,38 @@ export class Facade {
     return Array.from(this.rootPaths)
       .map(v => filePath.match(v))
       .filter(v => !!v)[0][0]
+  }
+
+  private dealWithSolved(obj: DependencyNode) {
+    this.builder.rawNodes.push(obj)
+
+    obj.dependenciesPathsAndNames
+      .map(pathAndName => {
+        const nextFilePath = pathAndName.path
+        const rootPath     = this.getRootPath(nextFilePath)
+        this.rootPaths.add(rootPath)
+
+        const nextLevel = obj.level + 1
+
+        return {
+          nextFilePath,
+          rootPath,
+          nextLevel
+        }
+      })
+      .filter((v) => !Array.from(this.solved).includes(v.nextFilePath))
+      .forEach(solverParams => {
+        const newSolver = new Solver(
+          solverParams.nextFilePath,
+          this.program,
+          solverParams.rootPath,
+          solverParams.nextLevel,
+          this.solver.outputEmitter
+        )
+        newSolver.run()
+
+        this.solved.add(solverParams.nextFilePath)
+      })
   }
 
 }
