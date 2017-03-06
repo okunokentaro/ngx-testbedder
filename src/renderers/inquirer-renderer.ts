@@ -87,11 +87,13 @@ export class InquirerRenderer extends AbstractRenderer {
         const mockProviders = unchosens.map(item => {
           return `{provide: ${item}, useClass: ${item}Mock},`
         })
+
         const providers = chosens.filter(item => item !== doneText).map(item => {
           return `${item},`
         })
 
-        this.emitter.emit(resolveEventName, providers.concat(mockProviders).join('\n'))
+        const result = providers.concat(mockProviders).join('\n')
+        this.emitter.emit(resolveEventName, result)
         return
       }
       this.renderPrompt(treeLevelMap, chosens, _maxLevel + 1)
