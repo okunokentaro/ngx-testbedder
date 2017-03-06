@@ -4,6 +4,7 @@
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "dependencies": {
     "archy": "^1.0.0",
+    "ava": "^0.18.2",
     "better-console": "^1.0.0",
     "find-root": "^1.0.0",
     "packpath": "^0.1.0",
@@ -20,6 +21,7 @@
   "scripts": {
     "prepare": "tsc -p ./ && cp ./sample/tsconfig.json ./dist/sample/tsconfig.json",
     "start": "yarn run prepare && node ./dist/src/main.js",
-    "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts"
+    "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
+    "test": "tsc -p ./ && ava --match\"*test\""
   }
 }
