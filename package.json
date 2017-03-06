@@ -22,6 +22,6 @@
     "prepare": "tsc -p ./ && cp ./fixture/tsconfig.json ./dist/fixture/tsconfig.json",
     "start": "yarn run prepare && node ./dist/src/main.js",
     "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
-    "test": "tsc -p ./ && ava --match\"test.js\""
+    "test": "tsc -p ./ && ava --match\"test.js\" --verbose"
   }
 }

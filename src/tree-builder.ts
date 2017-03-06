@@ -8,6 +8,7 @@ export interface DependencyNode {
 }
 
 export interface TreeNode {
+  path : string
   label: string
   nodes: TreeNode[]
 }
@@ -19,7 +20,7 @@ export class TreeBuilder {
   build(): TreeNode {
     const rootNode = this.rawNodes.find(node => node.level === 1)
 
-    const buildTree = (node: DependencyNode, currentLevel: number): any[] => {
+    const buildTree = (node: DependencyNode, currentLevel: number): TreeNode[] => {
       const nextLevel = currentLevel + 1
 
       return node.dependenciesPathsAndNames.map(pathAndName => {
@@ -29,27 +30,36 @@ export class TreeBuilder {
           ? nexts[0]
           : nexts.find(v => v.path === pathAndName.path)
 
-        const childrenNodes = !!next
-          ? buildTree(next, nextLevel)
-          : []
-
-        const path = nextLevel === 1
-          ? next.path
-          : pathAndName.path
-
-        const name = nextLevel === 1
-          ? next.name
-          : pathAndName.name
-
-        return {
-          // path: pathAndName.path,
-          label: name,
-          nodes: childrenNodes,
-        }
+        return this.createTreeNode(next, pathAndName, nextLevel, buildTree)
       })
     }
 
     return buildTree(rootNode, 0)[0] as TreeNode
+  }
+
+  private createTreeNode(
+    next:        DependencyNode,
+    pathAndName: {path: string, name: string},
+    level:       number,
+    circleFunction: (node: DependencyNode, currentLevel: number) => TreeNode[]
+  ): TreeNode {
+    const path = level === 1
+      ? next.path
+      : pathAndName.path
+
+    const name = level === 1
+      ? next.name
+      : pathAndName.name
+
+    const childrenNodes = !!next
+      ? circleFunction(next, level)
+      : []
+
+    return {
+      path:  path,
+      label: name,
+      nodes: childrenNodes,
+    }
   }
 
 }
