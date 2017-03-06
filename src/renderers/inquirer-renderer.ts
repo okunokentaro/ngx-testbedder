@@ -10,6 +10,8 @@ interface SelfEventEmitter extends EventEmitter {
   on: (event: typeof resolveEventName, listener: (res: string) => void) => this
 }
 
+type CalcResult = {treeLines: string[], defaultChosens: string[]}
+
 const doneText = 'Done'
 
 export class InquirerRenderer extends AbstractRenderer {
@@ -32,7 +34,7 @@ export class InquirerRenderer extends AbstractRenderer {
   }
 
   private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], _maxLevel: number) {
-    const pre = async (_chosens: string[], __maxLevel: number) => {
+    const calc = async (_chosens: string[], __maxLevel: number): Promise<CalcResult> => {
       const decimateTree = (tree: TreeNode, maxLevel: number): TreeNode => {
         const nodes = this.getLevel(tree) <= maxLevel && _chosens.includes(tree.label)
           ? tree.nodes.map(node => decimateTree(node, maxLevel))
@@ -59,12 +61,13 @@ export class InquirerRenderer extends AbstractRenderer {
         .filter(v => !!v)
         .map(idx => treeLines[idx])
 
-      return {
-        treeLines, defaultChosens
-      }
+      return {treeLines, defaultChosens}
     }
 
-    const {treeLines, defaultChosens} = await pre(chosens, _maxLevel) as {treeLines: string[], defaultChosens: string[]}
+    const {treeLines, defaultChosens} = await calc(
+      chosens,
+      _maxLevel,
+    ) as {treeLines: string[], defaultChosens: string[]}
 
     const questions = [
       {
@@ -87,7 +90,10 @@ export class InquirerRenderer extends AbstractRenderer {
         return
       }
 
-      const {treeLines} = await pre(_chosens.filter(item => item !== doneText), _maxLevel + 1) as {treeLines: string[], defaultChosens: string[]}
+      const {treeLines} = await calc(
+        _chosens.filter(item => item !== doneText),
+        _maxLevel + 1
+      ) as CalcResult
 
       const unchosens = Array.from(
         new Set(
