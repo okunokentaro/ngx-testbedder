@@ -5,7 +5,7 @@ import { AbstractDetector } from './abstract-detector'
 
 export class ImportDetector extends AbstractDetector {
 
-  private paths = new Set<string>()
+  private paths = new Map<string, string>()
 
   constructor(
     private sourceFile: ts.SourceFile,
@@ -14,9 +14,9 @@ export class ImportDetector extends AbstractDetector {
     super()
   }
 
-  detect(): string[] {
+  detect(): Map<string, string> {
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
-    return Array.from(this.paths)
+    return this.paths
   }
 
   private visit(node: ts.Node) {
@@ -32,7 +32,7 @@ export class ImportDetector extends AbstractDetector {
       if (this.params.includes(elem.name.text)) {
         if ((node.moduleSpecifier as ts.StringLiteral).text) {
           const path = (node.moduleSpecifier as ts.StringLiteral).text
-          this.paths.add(path)
+          this.paths.set(path, elem.name.text)
         }
       }
     })

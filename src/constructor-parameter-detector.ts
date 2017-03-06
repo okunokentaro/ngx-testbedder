@@ -12,10 +12,12 @@ export class ConstructorParameterDetector extends AbstractDetector {
     private detectedRanges: TextRangeTuple[],
   ) {
     super()
-    console.assert(0 < this.detectedRanges.length)
   }
 
   detect(): string[] {
+    if (this.detectedRanges.length < 1) {
+      return []
+    }
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
     return this.injectClassNames
   }

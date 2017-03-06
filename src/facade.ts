@@ -1,8 +1,15 @@
 import * as ts from 'typescript'
 
 import { Solver } from './solver';
+import { TreeBuilder } from './tree-builder';
 
 const findRoot = require('find-root')
+
+export interface Output {
+  path: string,
+  level: number,
+  dependenciesPathsAndNames: Array<{path: string, name: string}>,
+}
 
 export class Facade {
 
@@ -11,6 +18,7 @@ export class Facade {
   private solver: Solver
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
+  private outputs = [] as Array<Output>
 
   constructor(
     private filePath: string,
@@ -18,12 +26,19 @@ export class Facade {
     private projectRoot: string,
   ) {
     this.program = ts.createProgram([this.filePath], this.tsconfig)
-    this.solver = new Solver(filePath, this.program, projectRoot)
+    this.solver = new Solver(filePath, this.program, projectRoot, 1)
   }
 
   run() {
     const dispose = this.solver.addListenerOutput(obj => {
-      obj.absoluteFilePaths.forEach(nextFilePath => {
+      this.outputs.push({
+        path:         obj.filePath,
+        level:        obj.currentLevel,
+        dependenciesPathsAndNames: obj.absoluteFilePathsAndNames,
+      })
+
+      obj.absoluteFilePathsAndNames.forEach(filePathAndName => {
+        const nextFilePath = filePathAndName.path
         const rootPath = (() => {
           const rootPathIsChecked = Array.from(this.rootPaths)
             .some(_rootPath => nextFilePath.includes(_rootPath))
@@ -42,21 +57,24 @@ export class Facade {
           return
         }
 
+        const nextLevel = obj.currentLevel + 1
         const newSolver = new Solver(
           nextFilePath,
           this.program,
           rootPath,
+          nextLevel,
           this.solver.outputEmitter
         )
         newSolver.run()
-
-        console.log(nextFilePath);
 
         this.solved.add(nextFilePath)
       })
     })
     this.solver.run()
     dispose()
+
+    const builder = new TreeBuilder()
+    builder.build(this.outputs)
   }
 
 }

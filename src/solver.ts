@@ -8,8 +8,16 @@ import { ComponentDetector } from './component-detector';
 import { TextRangeTuple } from './main';
 import { EventEmitter } from 'events';
 
+type Output = {
+  absoluteFilePathsAndNames: Array<{path: string, name: string}>,
+  filePath: string,
+  currentLevel: number,
+}
+
 const typeScriptExtension = 'ts'
 const extensionSeparator  = '.'
+
+const outputEventName = 'output'
 
 const getFileDir = (pathWithFileName: string) => {
   return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
@@ -28,6 +36,7 @@ export class Solver {
     private filePath: string,
     private program: ts.Program,
     private projectRoot: string,
+    private level: number,
     emitter?: EventEmitter,
   ) {
     this.outputEmitter = !!emitter ? emitter : new EventEmitter()
@@ -47,24 +56,30 @@ export class Solver {
       return output.concat(v.ranges)
     }, [] as TextRangeTuple[])
 
-    const params   = new ConstructorParameterDetector(thisSource, classPositions).detect()
-    const detector = new ImportDetector(thisSource, params)
-    const paths    = detector.detect()
+    console.log('classPositions', classPositions);
+    const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
+    const detector     = new ImportDetector(thisSource, params)
+    const pathAndNames = detector.detect()
 
-    const pathsExcludeNodeModules = paths.filter(_path => {
+    const pathsExcludeNodeModules = Array.from(pathAndNames.keys()).filter(_path => {
       return /^\./.test(_path)
     })
 
-    const absoluteFilePaths = pathsExcludeNodeModules.map(_path => {
+    const absoluteFilePathsAndNames = pathsExcludeNodeModules.map(_path => {
       const fileDir = getFileDir(this.filePath)
-      return [pathModule.resolve(fileDir, _path), typeScriptExtension]
+      const absolutePath = [pathModule.resolve(fileDir, _path), typeScriptExtension]
         .join(extensionSeparator)
+      return {
+        path: absolutePath,
+        name: pathAndNames.get(_path),
+      }
     })
 
-    if (0 < absoluteFilePaths.length) {
-      this.outputEmitter.emit('output', {
-        absoluteFilePaths,
-        filePath: this.filePath
+    if (0 < absoluteFilePathsAndNames.length) {
+      this.outputEmitter.emit(outputEventName, {
+        absoluteFilePathsAndNames,
+        filePath: this.filePath,
+        currentLevel: this.level
       })
     }
   }
@@ -72,9 +87,9 @@ export class Solver {
   /**
    * @returns disposeFunction
    */
-  addListenerOutput(callback: (v: {absoluteFilePaths: string[], filePath: string}) => void): () => void {
-    const disposer = this.outputEmitter.on('output', callback)
-    return () => disposer.removeListener('output', callback)
+  addListenerOutput(callback: (v: Output) => void): () => void {
+    const disposer = this.outputEmitter.on(outputEventName, callback)
+    return () => disposer.removeListener(outputEventName, callback)
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {
