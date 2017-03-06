@@ -10,17 +10,17 @@ export interface TreeNode {
 
 export class TreeBuilder {
 
-  rawNodes = [] as Solved[]
+  solvedPool = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
 
   build(): TreeNode {
-    const rootNode = this.rawNodes.find(node => node.level === 1)
+    const rootNode = this.solvedPool.find(node => node.level === 1)
 
     const buildTree = (solved: Solved, currentLevel: number): TreeNode[] => {
       const nextLevel = currentLevel + 1
 
       return solved.dependenciesPathsAndNames.map(pathAndName => {
-        const nexts = this.rawNodes.filter(node => node.level === nextLevel)
+        const nexts = this.solvedPool.filter(node => node.level === nextLevel)
 
         const next  = nextLevel === 1
           ? nexts[0]

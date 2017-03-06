@@ -41,7 +41,7 @@ export class Facade {
   }
 
   private dealWithSolved(solved: Solved) {
-    this.builder.rawNodes.push(solved)
+    this.builder.solvedPool.push(solved)
 
     solved.dependenciesPathsAndNames
       .map(pathAndName => {
