@@ -4,13 +4,20 @@ import { TestingRenderer } from './renderers/testing-renderer';
 
 const packpath = require('packpath')
 const tsconfig = require('../../fixture/tsconfig.json')
-const renderer = new TestingRenderer()
+const testingRenderer = new TestingRenderer()
 
 test(async t => {
-  const rootRelativePath = './fixture/using-injectable-and-import/01.ts'
-  const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
+  const facade = new Facade(
+    './fixture/using-injectable-and-import/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      allowDuplicates: true,
+      renderer: testingRenderer,
+    }
+  )
 
-  const result = (await facade.run()).split('\n').filter(v => !!v)
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -20,10 +27,17 @@ test(async t => {
 })
 
 test(async t => {
-  const rootRelativePath = './fixture/using-injectable-deep-import/01.ts'
-  const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
+  const facade = new Facade(
+    './fixture/using-injectable-deep-import/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      allowDuplicates: true,
+      renderer: testingRenderer,
+    }
+  )
 
-  const result = (await facade.run()).split('\n').filter(v => !!v)
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -40,10 +54,17 @@ test(async t => {
 })
 
 test(async t => {
-  const rootRelativePath = './fixture/using-injectable-multi-edges/01.ts'
-  const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
+  const facade = new Facade(
+    './fixture/using-injectable-multi-edges/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      allowDuplicates: true,
+      renderer: testingRenderer,
+    }
+  )
 
-  const result = (await facade.run()).split('\n').filter(v => !!v)
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -60,10 +81,46 @@ test(async t => {
 })
 
 test(async t => {
-  const rootRelativePath = './fixture/using-injectable-multi-parents/01.ts'
-  const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
+  const facade = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      allowDuplicates: true,
+      renderer: testingRenderer,
+    }
+  )
 
-  const result = (await facade.run()).split('\n').filter(v => !!v)
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
+  const expected = [
+    '1 AService',
+    '2 BService',
+    '3 DService',
+    '4 IService',
+    '3 EService',
+    '3 FService',
+    '2 CService',
+    '3 GService',
+    '3 HService',
+    '2 DService',
+    '3 IService',
+  ]
+
+  t.deepEqual(result, expected)
+})
+
+test(async t => {
+  const facade = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      allowDuplicates: false,
+      renderer: testingRenderer,
+    }
+  )
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',

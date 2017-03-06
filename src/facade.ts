@@ -4,9 +4,15 @@ import * as pathModule from 'path'
 import { Solver, Solved } from './solver';
 import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
+import { InquirerRenderer } from './renderers/inquirer-renderer';
 
 const findRoot = require('find-root')
 const console  = require('better-console')
+
+export interface Options {
+  allowDuplicates: boolean
+  renderer:        AbstractRenderer
+}
 
 export class Facade {
 
@@ -14,6 +20,7 @@ export class Facade {
   private program:  ts.Program
   private solver:   Solver
   private builder:  TreeBuilder
+  private renderer: AbstractRenderer
 
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
@@ -22,12 +29,15 @@ export class Facade {
     filePath: string,
     private tsconfig: any,
     private projectRoot: string,
-    private renderer: AbstractRenderer,
+    private options?: Options
   ) {
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program  = ts.createProgram([this.filePath], this.tsconfig)
     this.solver   = new Solver(this.filePath, this.program, projectRoot, 1)
-    this.builder  = new TreeBuilder()
+
+    this.renderer = !!options && !!options.renderer ? options.renderer : new InquirerRenderer()
+
+    this.builder  = new TreeBuilder(options)
   }
 
   run(): Promise<string> {

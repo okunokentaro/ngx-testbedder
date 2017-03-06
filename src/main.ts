@@ -1,9 +1,9 @@
 import * as yargs from 'yargs'
-import { Facade } from './facade';
-import { InquirerRenderer } from './renderers/inquirer-renderer';
 
-const packpath = require('packpath')
+import { Facade } from './facade';
+
 const console  = require('better-console')
+const packpath = require('packpath')
 
 declare const require: any
 
@@ -14,8 +14,7 @@ const main = (argv: any) => {
     return
   }
   const tsconfig = require('../../tsconfig.json')
-  const renderer = new InquirerRenderer()
-  const facade   = new Facade(arg, tsconfig, packpath.self(), renderer)
+  const facade   = new Facade(arg, tsconfig, packpath.self())
 
   facade.run().then(res => {
     console.info(res)

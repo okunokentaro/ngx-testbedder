@@ -1,6 +1,6 @@
 import { Solved } from './solver';
+import { Options } from './facade';
 
-const archy = require('archy')
 const console = require('better-console')
 
 export interface TreeNode {
@@ -14,7 +14,15 @@ const allowDuplicates = true
 export class TreeBuilder {
 
   solvedPool = [] as Solved[]
+
   private alreadyAddedPaths = new Set<string>()
+  private allowDuplicates   = true
+
+  constructor(options: Options) {
+    this.allowDuplicates = !!options && typeof options.allowDuplicates === 'boolean'
+        ? options.allowDuplicates
+        : this.allowDuplicates
+  }
 
   build(): {treeNode: TreeNode, solveds: Solved[]} {
     const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
@@ -28,7 +36,7 @@ export class TreeBuilder {
 
       return solved.dependencies.toArray()
         .map(loc => {
-          if (!allowDuplicates) {
+          if (!this.allowDuplicates) {
             if (this.alreadyAddedPaths.has(loc.path)) {
               return
             }
