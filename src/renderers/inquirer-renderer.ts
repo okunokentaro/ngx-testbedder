@@ -70,24 +70,17 @@ export class InquirerRenderer extends AbstractRenderer {
     ]
 
     this.getInquirer().prompt(questions).then((answer: {tree: string[]}) => {
-      const chosens = Array.from((() => {
-        return new Set(
-          answer.tree.map(item => {
-            return item.split(' ').slice(-1)[0]
-          })
-        )
-      })())
+      const chosens = Array.from(
+        new Set(answer.tree.map(item => this.getClassName(item)))
+      )
 
       if (answer.tree.includes(doneText)) {
-        const treeLinesExcludeDone = treeLines.filter(item => item !== doneText)
-
         const unchosens = Array.from(
           new Set(
-            treeLinesExcludeDone.map(item => {
-              return item.split(' ').slice(-1)[0]
-            }).filter(item => {
-              return !chosens.includes(item)
-            })
+            treeLines
+              .filter(item => item !== doneText)
+              .map(item => this.getClassName(item))
+              .filter(item => !chosens.includes(item))
           )
         )
 
