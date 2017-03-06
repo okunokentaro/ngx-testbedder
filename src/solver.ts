@@ -80,19 +80,15 @@ export class Solver {
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {
-    {
-      const detector = new InjectableDetector(src)
-      const path     = this.getFullPath(src.fileName)
-      const ranges   = detector.detect()
-      this.sink.injectable.push({path, ranges})
-    }
+    this.sink.injectable.push({
+      path:   this.getFullPath(src.fileName),
+      ranges: new InjectableDetector(src).detect(),
+    })
 
-    {
-      const detector = new ComponentDetector(src)
-      const path     = this.getFullPath(src.fileName)
-      const ranges   = detector.detect()
-      this.sink.component.push({path, ranges})
-    }
+    this.sink.component.push({
+      path: this.getFullPath(src.fileName),
+      ranges: new ComponentDetector(src).detect(),
+    })
   }
 
   private getFullPath(partialPath: string): string {
