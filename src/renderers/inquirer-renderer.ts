@@ -27,36 +27,24 @@ export class InquirerRenderer extends AbstractRenderer {
     this.renderPrompt(treeLevelMap, [treeLevelMap.treeNode.label], 1)
 
     return new Promise(resolve => {
-      this.emitter.on(resolveEventName, (res: string) => {
-        resolve(res)
-      })
+      this.emitter.on(resolveEventName, res => resolve(res))
     })
   }
 
-  private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], maxLevel: number) {
-    const decimateTree = (tree: TreeNode, _maxLevel: number): TreeNode => {
-      if (_maxLevel < this.levelMap.get(tree.label)) {
-        return {
-          path: tree.path,
-          label: tree.label,
-          nodes: [],
-        }
-      }
-      if (!chosens.includes(tree.label)) {
-        return {
-          path: tree.path,
-          label: tree.label,
-          nodes: [],
-        }
-      }
+  private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], _maxLevel: number) {
+    const decimateTree = (tree: TreeNode, maxLevel: number): TreeNode => {
+      const nodes = this.getLevel(tree) <= maxLevel && chosens.includes(tree.label)
+        ? tree.nodes.map(node => decimateTree(node, maxLevel))
+        : []
+
       return {
-        path: tree.path,
+        path:  tree.path,
         label: tree.label,
-        nodes: tree.nodes.map(node => decimateTree(node, _maxLevel)),
+        nodes,
       }
     }
 
-    const decimatedTree = decimateTree(treeLevelMap.treeNode, maxLevel)
+    const decimatedTree = decimateTree(treeLevelMap.treeNode, _maxLevel)
 
     const archy = new ArchyRenderer()
     const archyResult = await archy.render({treeNode: decimatedTree, levelMap: treeLevelMap.levelMap})
@@ -113,12 +101,16 @@ export class InquirerRenderer extends AbstractRenderer {
         this.emitter.emit(resolveEventName, providers.concat(mockProviders).join('\n'))
         return
       }
-      this.renderPrompt(treeLevelMap, chosens, maxLevel + 1)
+      this.renderPrompt(treeLevelMap, chosens, _maxLevel + 1)
     })
   }
 
   private getInquirer(): inquirer.Inquirer {
     return inquirer
+  }
+
+  private getLevel(tree: TreeNode) {
+    return this.levelMap.get(tree.label)
   }
 
 }
