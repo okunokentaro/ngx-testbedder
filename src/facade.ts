@@ -30,7 +30,6 @@ export class Facade {
   }
 
   run(): string {
-
     const dispose = this.solver.addListenerOutput(obj => {
       this.dealWithSolved(obj)
     })
@@ -39,18 +38,6 @@ export class Facade {
 
     const built = this.builder.build()
     return this.renderer.render(built)
-  }
-
-  private getRootPath(filePath: string) {
-    const rootPathIsChecked = Array.from(this.rootPaths)
-      .some(_rootPath => filePath.includes(_rootPath))
-    if (!rootPathIsChecked) {
-      return findRoot(filePath)
-    }
-
-    return Array.from(this.rootPaths)
-      .map(v => filePath.match(v))
-      .filter(v => !!v)[0][0]
   }
 
   private dealWithSolved(obj: DependencyNode) {
@@ -83,6 +70,18 @@ export class Facade {
 
         this.solved.add(solverParams.nextFilePath)
       })
+  }
+
+  private getRootPath(filePath: string) {
+    const rootPathIsChecked = Array.from(this.rootPaths)
+      .some(_rootPath => filePath.includes(_rootPath))
+    if (!rootPathIsChecked) {
+      return findRoot(filePath)
+    }
+
+    return Array.from(this.rootPaths)
+      .map(v => filePath.match(v))
+      .filter(v => !!v)[0][0]
   }
 
 }
