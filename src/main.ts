@@ -3,6 +3,7 @@ import { Facade } from './facade';
 import { ArchyRenderer } from './archy-renderer';
 
 const packpath = require('packpath')
+const console  = require('better-console')
 
 declare const require: any
 
