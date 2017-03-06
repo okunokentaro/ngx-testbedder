@@ -23,23 +23,25 @@ export class TreeBuilder {
       const currentLevelDependencies = this.solvedPool
         .filter(solved => solved.level === currentLevel)
 
-      return solved.dependencies.toArray().map(loc => {
-        if (this.alreadyAddedPaths.has(loc.path)) {
-          return
-        }
-        this.alreadyAddedPaths.add(loc.path)
+      return solved.dependencies.toArray()
+        .map(loc => {
+          if (this.alreadyAddedPaths.has(loc.path)) {
+            return
+          }
+          this.alreadyAddedPaths.add(loc.path)
 
-        const nodes = buildChildren(
-          currentLevel,
-          currentLevelDependencies.find(solved => solved.path === loc.path),
-        )
+          const nodes = buildChildren(
+            currentLevel,
+            currentLevelDependencies.find(solved => solved.path === loc.path),
+          )
 
-        return {
-          path:  loc.path,
-          label: loc.name,
-          nodes,
-        }
-      }).filter(v => !!v)
+          return {
+            path:  loc.path,
+            label: loc.name,
+            nodes,
+          }
+        })
+        .filter(treeNode => !!treeNode)
     }
 
     const root = this.solvedPool.find(node => node.level === 1)
