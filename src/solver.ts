@@ -7,13 +7,13 @@ import { InjectableDetector } from './detectors/injectable-detector'
 import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
-import { ClassLocation } from './class-location';
+import { ClassLocations } from './class-locations';
 
 export interface Solved {
   path:  string,
   name:  string,
   level: number,
-  dependencies: ClassLocation[],
+  dependencies: ClassLocations,
 }
 
 const console = require('better-console')
@@ -63,7 +63,7 @@ export class Solver {
 
     if (classLocations.exists()) {
       this.emitter.emit(outputEventName, {
-        dependencies: classLocations.toArray(),
+        dependencies: classLocations,
         path:         this.filePath,
         name:         classInfo.includingClassName,
         level:        this.level

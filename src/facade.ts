@@ -43,9 +43,9 @@ export class Facade {
   private dealWithSolved(solved: Solved) {
     this.builder.solvedPool.push(solved)
 
-    solved.dependencies
-      .map(pathAndName => {
-        const nextFilePath = pathAndName.path
+    solved.dependencies.toArray()
+      .map(classLocation => {
+        const nextFilePath = classLocation.path
         const rootPath     = this.getRootPath(nextFilePath)
         this.rootPaths.add(rootPath)
 
