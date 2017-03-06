@@ -20,9 +20,13 @@ const console = require('better-console')
 
 const outputEventName = 'output'
 
+const getFileDir = (pathWithFileName: string): string => {
+  return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
+}
+
 export class Solver {
 
-  outputEmitter = new EventEmitter()
+  emitter = new EventEmitter()
 
   private sink = {
     injectable: [] as Array<{path: string, ranges: TextRangeTuple[]}>,
@@ -36,7 +40,7 @@ export class Solver {
     private level:       number,
     emitter?:            EventEmitter,
   ) {
-    this.outputEmitter = !!emitter ? emitter : new EventEmitter()
+    this.emitter = !!emitter ? emitter : new EventEmitter()
   }
 
   run() {
@@ -53,17 +57,16 @@ export class Solver {
       return output.concat(v.ranges)
     }, [] as TextRangeTuple[])
 
-    const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
-    const classLocations = new ImportDetector(thisSource, params.injectNames).detect()
+    const classInfo      = new ConstructorParameterDetector(thisSource, classPositions).detect()
+    const fileDir = getFileDir(this.filePath)
+    const classLocations = new ImportDetector(thisSource, classInfo.injectNames, fileDir).detect()
 
-    const dependencies = classLocations.hoge(this.filePath)
-
-    if (0 < dependencies.length) {
-      this.outputEmitter.emit(outputEventName, {
-        dependencies,
-        path:  this.filePath,
-        name:  params.includingClassName,
-        level: this.level
+    if (classLocations.exists()) {
+      this.emitter.emit(outputEventName, {
+        dependencies: classLocations.toArray(),
+        path:         this.filePath,
+        name:         classInfo.includingClassName,
+        level:        this.level
       } as Solved)
     }
   }
@@ -72,7 +75,7 @@ export class Solver {
    * @returns disposeFunction
    */
   addListenerOutput(callback: (v: Solved) => void): () => void {
-    const disposer = this.outputEmitter.on(outputEventName, callback)
+    const disposer = this.emitter.on(outputEventName, callback)
     return () => disposer.removeListener(outputEventName, callback)
   }
 

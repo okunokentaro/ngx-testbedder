@@ -64,7 +64,7 @@ export class Facade {
           this.program,
           solverParams.rootPath,
           solverParams.nextLevel,
-          this.solver.outputEmitter
+          this.solver.emitter
         )
         newSolver.run()
 

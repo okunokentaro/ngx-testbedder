@@ -12,6 +12,7 @@ export class ImportDetector extends AbstractDetector {
   constructor(
     private sourceFile: ts.SourceFile,
     private params: string[],
+    private fileDir: string
   ) {
     super()
   }
@@ -48,10 +49,13 @@ export class ImportDetector extends AbstractDetector {
   }
 
   private makeClassLocations(pathMap: Map<string, string>): ClassLocations {
-    return new ClassLocations(Array.from(pathMap.keys())
-      .map(k => {
-        return new ClassLocation(k, pathMap.get(k))
-      }))
+    return new ClassLocations(
+      Array.from(pathMap.keys())
+        .map(k => {
+          return new ClassLocation(k, pathMap.get(k))
+        }),
+      this.fileDir
+    )
   }
 
 }
