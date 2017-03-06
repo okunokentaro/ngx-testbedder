@@ -10,13 +10,12 @@ interface SelfEventEmitter extends EventEmitter {
   on: (event: typeof resolveEventName, listener: (res: string) => void) => this
 }
 
-type CalcResult = {treeLines: string[], defaultChosens: string[]}
-
 const doneText = 'Done'
 
 export class InquirerRenderer extends AbstractRenderer {
 
-  private emitter: SelfEventEmitter
+  private emitter:  SelfEventEmitter
+  private treeNode: TreeNode
   private levelMap: Map<string, number>
 
   constructor() {
@@ -25,49 +24,49 @@ export class InquirerRenderer extends AbstractRenderer {
   }
 
   render(treeLevelMap: TreeLevelMap): Promise<string> {
+    this.treeNode = treeLevelMap.treeNode
     this.levelMap = treeLevelMap.levelMap
-    this.renderPrompt(treeLevelMap, [treeLevelMap.treeNode.label], 1)
+
+    this.renderPrompt([treeLevelMap.treeNode.label], 1)
 
     return new Promise(resolve => {
       this.emitter.on(resolveEventName, res => resolve(res))
     })
   }
 
-  private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], _maxLevel: number) {
-    const calc = async (_chosens: string[], __maxLevel: number): Promise<CalcResult> => {
-      const decimateTree = (tree: TreeNode, maxLevel: number): TreeNode => {
-        const nodes = this.getLevel(tree) <= maxLevel && _chosens.includes(tree.label)
-          ? tree.nodes.map(node => decimateTree(node, maxLevel))
-          : []
+  private async renderPrompt(chosens: string[], maxLevel: number) {
+    const decimateTree = (
+      node: TreeNode,
+      _chosens: string[],
+      _maxLevel: number
+    ): TreeNode => {
+      const nodes = this.getLevel(node) <= _maxLevel && _chosens.includes(node.label)
+        ? node.nodes.map(n => decimateTree(n, _chosens, _maxLevel))
+        : []
 
-        return {
-          path:  tree.path,
-          label: tree.label,
-          nodes,
-        }
+      return {
+        path:  node.path,
+        label: node.label,
+        nodes,
       }
-
-      const decimatedTree = decimateTree(treeLevelMap.treeNode, __maxLevel)
-
-      const archy       = new ArchyRenderer()
-      const archyResult = await archy.render({
-        treeNode: decimatedTree,
-        levelMap: treeLevelMap.levelMap
-      })
-      const treeLines   = [doneText].concat(archyResult.split('\n').filter(l => !!l))
-
-      const defaultChosens = treeLines
-        .map((item, idx) => _chosens.includes(this.getClassName(item)) ? idx : null)
-        .filter(v => !!v)
-        .map(idx => treeLines[idx])
-
-      return {treeLines, defaultChosens}
     }
 
-    const {treeLines, defaultChosens} = await calc(
-      chosens,
-      _maxLevel,
-    ) as {treeLines: string[], defaultChosens: string[]}
+    const calcTreeLines = async (
+      _chosens: string[],
+      _maxLevel: number
+    ): Promise<string[]> => {
+      const decimatedTree = decimateTree(this.treeNode, _chosens, _maxLevel)
+
+      const archy       = new ArchyRenderer()
+      const archyResult = await archy.render({treeNode: decimatedTree, levelMap: this.levelMap})
+      return [doneText].concat(archyResult.split('\n').filter(l => !!l))
+    }
+
+    const treeLines = await calcTreeLines(chosens, maxLevel,) as string[]
+    const defaultChosens = treeLines
+      .map((item, idx) => chosens.includes(this.getClassName(item)) ? idx : null)
+      .filter(v => !!v)
+      .map(idx => treeLines[idx])
 
     const questions = [
       {
@@ -86,14 +85,14 @@ export class InquirerRenderer extends AbstractRenderer {
       )
 
       if (!answer.tree.includes(doneText)) {
-        this.renderPrompt(treeLevelMap, _chosens, _maxLevel + 1)
+        this.renderPrompt(_chosens, maxLevel + 1)
         return
       }
 
-      const {treeLines} = await calc(
+      const treeLines = await calcTreeLines(
         _chosens.filter(item => item !== doneText),
-        _maxLevel + 1
-      ) as CalcResult
+        maxLevel + 1
+      )
 
       const unchosens = Array.from(
         new Set(
