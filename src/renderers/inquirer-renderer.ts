@@ -23,18 +23,14 @@ export class InquirerRenderer extends AbstractRenderer {
   }
 
   render(treeLevelMap: TreeLevelMap): Promise<string> {
-    this.question(treeLevelMap)
+    this.levelMap = treeLevelMap.levelMap
+    this.renderPrompt(treeLevelMap, [treeLevelMap.treeNode.label], 1)
 
     return new Promise(resolve => {
       this.emitter.on(resolveEventName, (res: string) => {
         resolve(res)
       })
     })
-  }
-
-  private question(treeLevelMap: TreeLevelMap) {
-    this.levelMap = treeLevelMap.levelMap
-    this.renderPrompt(treeLevelMap, [treeLevelMap.treeNode.label], 1)
   }
 
   private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], maxLevel: number) {
