@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer'
 import { EventEmitter } from 'events';
 
-import { TreeLevelMap, TreeNode } from '../tree-builder';
+import { TreeWithMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 import { ArchyRenderer } from './archy-renderer';
 
@@ -14,20 +14,17 @@ const doneText = 'Done'
 
 export class InquirerRenderer extends AbstractRenderer {
 
-  private emitter:  SelfEventEmitter
-  private treeNode: TreeNode
-  private levelMap: Map<string, number>
+  private emitter:     SelfEventEmitter
+  private treeWithMap: TreeWithMap
 
   constructor() {
     super()
     this.emitter = new EventEmitter() as SelfEventEmitter
   }
 
-  render(treeLevelMap: TreeLevelMap): Promise<string> {
-    this.treeNode = treeLevelMap.treeNode
-    this.levelMap = treeLevelMap.levelMap
-
-    this.renderPrompt([treeLevelMap.treeNode.label], 1)
+  render(treeWithMap: TreeWithMap): Promise<string> {
+    this.treeWithMap = treeWithMap
+    this.renderPrompt([treeWithMap.treeNode.label], 1)
 
     return new Promise(resolve => {
       this.emitter.on(resolveEventName, res => resolve(res))
@@ -35,34 +32,30 @@ export class InquirerRenderer extends AbstractRenderer {
   }
 
   private async renderPrompt(chosens: string[], maxLevel: number) {
-    const decimateTree = (
+    const decimateNode = (
       node: TreeNode,
       _chosens: string[],
       _maxLevel: number
     ): TreeNode => {
       const nodes = this.getLevel(node) <= _maxLevel && _chosens.includes(node.label)
-        ? node.nodes.map(n => decimateTree(n, _chosens, _maxLevel))
+        ? node.nodes.map(n => decimateNode(n, _chosens, _maxLevel))
         : []
 
-      return {
-        path:  node.path,
-        label: node.label,
-        nodes,
-      }
+      return {label: node.label, nodes}
     }
 
-    const calcTreeLines = async (
+    const reCalcTreeLines = async (
       _chosens: string[],
       _maxLevel: number
     ): Promise<string[]> => {
-      const decimatedTree = decimateTree(this.treeNode, _chosens, _maxLevel)
+      const decimatedTree = decimateNode(this.treeWithMap.treeNode, _chosens, _maxLevel)
 
-      const archy       = new ArchyRenderer()
-      const archyResult = await archy.render({treeNode: decimatedTree, levelMap: this.levelMap})
+      const archyResult = await new ArchyRenderer()
+        .render(Object.assign({}, this.treeWithMap, {treeNode: decimatedTree}))
       return [doneText].concat(archyResult.split('\n').filter(l => !!l))
     }
 
-    const treeLines = await calcTreeLines(chosens, maxLevel,) as string[]
+    const treeLines = await reCalcTreeLines(chosens, maxLevel) as string[]
     const defaultChosens = treeLines
       .map((item, idx) => chosens.includes(this.getClassName(item)) ? idx : null)
       .filter(v => !!v)
@@ -89,7 +82,7 @@ export class InquirerRenderer extends AbstractRenderer {
         return
       }
 
-      const treeLines = await calcTreeLines(
+      const treeLines = await reCalcTreeLines(
         _chosens.filter(item => item !== doneText),
         maxLevel + 1
       )
@@ -103,15 +96,10 @@ export class InquirerRenderer extends AbstractRenderer {
         )
       )
 
-      const mockProviders = unchosens.map(item => {
-        return `{provide: ${item}, useClass: ${item}Mock},`
-      })
+      const mockProviders = this.formatMockProviders(unchosens)
+      const providers     = this.formatProviders(_chosens)
+      const result        = providers.concat(mockProviders).join('\n')
 
-      const providers = _chosens.filter(item => item !== doneText).map(item => {
-        return `${item},`
-      })
-
-      const result = providers.concat(mockProviders).join('\n')
       this.emitter.emit(resolveEventName, result)
     })
   }
@@ -120,12 +108,23 @@ export class InquirerRenderer extends AbstractRenderer {
     return inquirer
   }
 
-  private getLevel(tree: TreeNode) {
-    return this.levelMap.get(tree.label)
+  private getLevel(node: TreeNode) {
+    return this.treeWithMap.levelMap.get(node.label)
   }
 
   private getClassName(questionsText: string) {
     return questionsText.split(' ').slice(-1)[0]
+  }
+
+  private formatMockProviders(classNames: string[]): string[] {
+    return classNames
+      .map(cls => `{provide: ${cls}, useClass: ${cls}Mock},`)
+  }
+
+  private formatProviders(classNames: string[]): string[] {
+    return classNames
+      .filter(item => item !== doneText)
+      .map(item => `${item},`)
   }
 
 }

@@ -1,10 +1,10 @@
-import { TreeLevelMap, TreeNode } from '../tree-builder';
+import { TreeWithMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 
 export class TestingRenderer extends AbstractRenderer {
 
-  render(treeLevelMap: TreeLevelMap): Promise<string> {
-    return Promise.resolve(this.renderImpl(treeLevelMap.treeNode))
+  render(treeWithMap: TreeWithMap): Promise<string> {
+    return Promise.resolve(this.renderImpl(treeWithMap.treeNode))
   }
 
   private renderImpl(node: TreeNode): string {

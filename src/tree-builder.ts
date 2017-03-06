@@ -4,12 +4,15 @@ import { OptionsNonNull } from './facade';
 const console = require('better-console')
 
 export interface TreeNode {
-  path : string
   label: string
   nodes: TreeNode[]
 }
 
-export type TreeLevelMap = {treeNode: TreeNode, levelMap: Map<string, number>}
+export interface TreeWithMap {
+  treeNode: TreeNode
+  levelMap: Map<string, number>
+  pathMap:  Map<string, string>
+}
 
 export class TreeBuilder {
 
@@ -22,7 +25,7 @@ export class TreeBuilder {
     this.allowDuplicates = options.allowDuplicates
   }
 
-  build(): TreeLevelMap {
+  build(): TreeWithMap {
     const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
       if (!solved) {
         return []
@@ -47,7 +50,6 @@ export class TreeBuilder {
           )
 
           return {
-            path:  loc.path,
             label: loc.name,
             nodes,
           }
@@ -62,17 +64,19 @@ export class TreeBuilder {
     const root = this.solvedPool.find(node => node.level === 1)
 
     const levelMap = new Map<string, number>()
+    const pathMap  = new Map<string, string>()
     this.solvedPool.forEach(v => {
       levelMap.set(v.name, v.level)
+      pathMap.set(v.name, v.path)
     })
 
     return {
       treeNode: {
-        path:  root.path,
         label: root.name,
         nodes: buildChildren(1, root),
       },
-      levelMap
+      levelMap,
+      pathMap
     }
   }
 

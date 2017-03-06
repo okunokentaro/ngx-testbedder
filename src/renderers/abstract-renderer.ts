@@ -1,7 +1,7 @@
-import { TreeLevelMap } from '../tree-builder';
+import { TreeWithMap } from '../tree-builder';
 
 export abstract class AbstractRenderer {
 
-  abstract render(treeLevelMap: TreeLevelMap): Promise<string>
+  abstract render(treeWithMap: TreeWithMap): Promise<string>
 
 }
