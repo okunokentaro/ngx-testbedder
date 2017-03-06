@@ -2,8 +2,8 @@ import * as ts from 'typescript'
 import * as pathModule from 'path'
 
 import { Solver } from './solver';
-import { TreeBuilder, TreeNode } from './tree-builder';
-import { AbstractRenderer } from './abstract-renderer';
+import { TreeBuilder } from './tree-builder';
+import { AbstractRenderer } from './renderers/abstract-renderer';
 
 const findRoot = require('find-root')
 

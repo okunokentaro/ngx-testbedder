@@ -1,6 +1,6 @@
 import * as ts from 'typescript'
 
-import { isTypeReference, isImportDeclaration, isNamedImports } from './type-guards'
+import { isTypeReference, isImportDeclaration, isNamedImports } from '../type-guards'
 import { AbstractDetector } from './abstract-detector'
 
 export class ImportDetector extends AbstractDetector {

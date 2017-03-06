@@ -1,4 +1,4 @@
-import { TreeNode } from './tree-builder';
+import { TreeNode } from '../tree-builder';
 
 export abstract class AbstractRenderer {
 

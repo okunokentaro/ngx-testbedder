@@ -1,7 +1,7 @@
 import * as ts from 'typescript'
 import { EventEmitter } from 'events'
 
-import { isClassDeclaration, isCallExpression } from './type-guards'
+import { isClassDeclaration, isCallExpression } from '../type-guards'
 import { AbstractDetector, TextRangeTuple } from './abstract-detector'
 
 interface ClassPosition {
@@ -9,17 +9,17 @@ interface ClassPosition {
   hasInjectable: boolean
 }
 
-const INJECTABLE_NAME   = 'Injectable'
-const DETECT_INJECTABLE = 'detectInjectable'
+const COMPONENT_NAME   = 'Component'
+const DETECT_COMPONENT = 'detectComponent'
 
-export class InjectableDetector extends AbstractDetector {
+export class ComponentDetector extends AbstractDetector {
 
   private classPositions = [] as ClassPosition[]
 
   private emitter = new EventEmitter()
 
   private listeners = {
-    [DETECT_INJECTABLE]: (pos: TextRangeTuple) => {
+    [DETECT_COMPONENT]: (pos: TextRangeTuple) => {
       this.classPositions.forEach(v => {
         if (v.position[0] <= pos[0] && pos[1] <= v.position[1]) {
           v.hasInjectable = true
@@ -56,7 +56,7 @@ export class InjectableDetector extends AbstractDetector {
     })
 
     Array.from(node.decorators).forEach(decoNode => {
-      this.emitter.on(DETECT_INJECTABLE, this.listeners[DETECT_INJECTABLE])
+      this.emitter.on(DETECT_COMPONENT, this.listeners[DETECT_COMPONENT])
       ts.forEachChild(decoNode, _node => this.visitDecorators(_node))
     })
   }
@@ -64,11 +64,11 @@ export class InjectableDetector extends AbstractDetector {
   private visitDecorators(node: ts.Node) {
     if (isCallExpression(node)) {
       const decoratorName = (node.expression as ts.Identifier).text
-      if (decoratorName === INJECTABLE_NAME) {
-        this.emitter.emit(DETECT_INJECTABLE, [node.pos, node.end])
+      if (decoratorName === COMPONENT_NAME) {
+        this.emitter.emit(DETECT_COMPONENT, [node.pos, node.end])
       }
     }
-    this.emitter.removeListener(DETECT_INJECTABLE, this.listeners[DETECT_INJECTABLE])
+    this.emitter.removeListener(DETECT_COMPONENT, this.listeners[DETECT_COMPONENT])
     ts.forEachChild(node, _node => this.visitDecorators(_node))
   }
 

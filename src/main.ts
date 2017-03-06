@@ -1,6 +1,6 @@
 import * as yargs from 'yargs'
 import { Facade } from './facade';
-import { ArchyRenderer } from './archy-renderer';
+import { ArchyRenderer } from './renderers/archy-renderer';
 
 const packpath = require('packpath')
 const console  = require('better-console')

@@ -1,11 +1,11 @@
 import * as pathModule from 'path'
 import * as ts from 'typescript'
 
-import { ImportDetector } from './import-detector'
-import { ConstructorParameterDetector } from './constructor-parameter-detector'
-import { InjectableDetector } from './injectable-detector'
-import { ComponentDetector } from './component-detector';
-import { TextRangeTuple } from './abstract-detector';
+import { ImportDetector } from './detectors/import-detector'
+import { ConstructorParameterDetector } from './detectors/constructor-parameter-detector'
+import { InjectableDetector } from './detectors/injectable-detector'
+import { ComponentDetector } from './detectors/component-detector';
+import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
 import { DependencyNode } from './tree-builder';
 

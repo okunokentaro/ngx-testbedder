@@ -1,6 +1,6 @@
 import test from 'ava'
 import { Facade } from './facade';
-import { TestingRenderer } from './testing-renderer';
+import { TestingRenderer } from './renderers/testing-renderer';
 
 const packpath = require('packpath')
 const tsconfig = require('../../fixture/tsconfig.json')
