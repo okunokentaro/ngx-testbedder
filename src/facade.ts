@@ -6,6 +6,7 @@ import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 
 const findRoot = require('find-root')
+const console  = require('better-console')
 
 export class Facade {
 
@@ -36,8 +37,13 @@ export class Facade {
     this.solver.run()
     dispose()
 
-    const built = this.builder.build()
-    return this.renderer.render(built)
+    try {
+      const built = this.builder.build()
+      return this.renderer.render(built)
+    } catch(e) {
+      console.info(e.message)
+      return ''
+    }
   }
 
   private dealWithSolved(solved: Solved) {

@@ -13,6 +13,7 @@
     "yargs": "^7.0.1"
   },
   "devDependencies": {
+    "@types/inquirer": "^0.0.32",
     "@types/node": "^7.0.5",
     "@types/yargs": "^6.6.0",
     "tslint": "^4.5.1"

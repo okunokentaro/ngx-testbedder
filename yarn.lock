@@ -34,9 +34,110 @@
     ansi-styles "^2.2.1"
     esutils "^2.0.2"
 
-"@types/node@^7.0.5":
+"@types/inquirer@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-0.0.32.tgz#a4a08e83741c500a7c3c8e7776014f7f8a65870d"
+  dependencies:
+    "@types/rx" "*"
+    "@types/through" "*"
+
+"@types/node@*", "@types/node@^7.0.5":
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.5.tgz#96a0f0a618b7b606f1ec547403c00650210bfbb7"
+
+"@types/rx-core-binding@*":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rx-core-binding/-/rx-core-binding-4.0.1.tgz#1061a0a1dc7d7a527690a1b39acf8c505ee3cff9"
+  dependencies:
+    "@types/rx-core" "*"
+
+"@types/rx-core@*":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rx-core/-/rx-core-4.0.1.tgz#a1ef3a37a361d16c2f211ae1f1cd2de9efe10dcf"
+
+"@types/rx-lite-aggregates@*":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-aggregates/-/rx-lite-aggregates-4.0.1.tgz#eaf66758510a733963a2ef78dc71272e340e3f1e"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-async@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-async/-/rx-lite-async-4.0.0.tgz#c20d2a6dfe57a240296febbcc152fd070f6e2ee7"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-backpressure@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-backpressure/-/rx-lite-backpressure-4.0.0.tgz#a9e6576bc63bfaa28fcbb6ce9f2079419cbc4d45"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-coincidence@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-coincidence/-/rx-lite-coincidence-4.0.0.tgz#b619f856ebc4596d72be570303ed9a66b72f9561"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-experimental@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-experimental/-/rx-lite-experimental-4.0.0.tgz#3391bfc6f0bd698e994c958022e1a2fe316c3fb9"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-joinpatterns@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-joinpatterns/-/rx-lite-joinpatterns-4.0.0.tgz#1532b9319055ec97038e7ba6b70c8e883c4bcf12"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-testing@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-testing/-/rx-lite-testing-4.0.0.tgz#c950d641dbfc4e06359de63440604a9d82e6e979"
+  dependencies:
+    "@types/rx-lite-virtualtime" "*"
+
+"@types/rx-lite-time@*":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-time/-/rx-lite-time-4.0.0.tgz#d835941f707e09e5e7f04d49614e6e1bcd040105"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite-virtualtime@*":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite-virtualtime/-/rx-lite-virtualtime-4.0.1.tgz#8b4675ca0748d0810861ad4ed966a1a6794613c5"
+  dependencies:
+    "@types/rx-lite" "*"
+
+"@types/rx-lite@*":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rx-lite/-/rx-lite-4.0.2.tgz#cb6012567a62888bb99a1e8118ba829e6e76c3bc"
+  dependencies:
+    "@types/rx-core" "*"
+    "@types/rx-core-binding" "*"
+
+"@types/rx@*":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@types/rx/-/rx-4.1.1.tgz#598fc94a56baed975f194574e0f572fd8e627a48"
+  dependencies:
+    "@types/rx-core" "*"
+    "@types/rx-core-binding" "*"
+    "@types/rx-lite" "*"
+    "@types/rx-lite-aggregates" "*"
+    "@types/rx-lite-async" "*"
+    "@types/rx-lite-backpressure" "*"
+    "@types/rx-lite-coincidence" "*"
+    "@types/rx-lite-experimental" "*"
+    "@types/rx-lite-joinpatterns" "*"
+    "@types/rx-lite-testing" "*"
+    "@types/rx-lite-time" "*"
+    "@types/rx-lite-virtualtime" "*"
+
+"@types/through@*":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@types/through/-/through-0.0.28.tgz#1effa9a6d00fb48572b4cc9f44df25b0100db7fc"
+  dependencies:
+    "@types/node" "*"
 
 "@types/yargs@^6.6.0":
   version "6.6.0"

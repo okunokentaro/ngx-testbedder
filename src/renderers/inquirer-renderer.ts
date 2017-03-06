@@ -1,9 +1,9 @@
+import * as inquirer from 'inquirer'
+
 import { TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 import { ArchyRenderer } from './archy-renderer';
 import { Solved } from '../solver';
-
-const inquirer = require('inquirer')
 
 type TreeSolveds = {treeNode: TreeNode, solveds: Solved[]}
 type PromptTarget = {name: string, level: number}
@@ -72,16 +72,33 @@ export class InquirerRenderer extends AbstractRenderer {
         pageSize: 31,
       },
     ]
-    inquirer.prompt(questions).then((answer: {tree: string[]}) => {
+    this.getInquirer().prompt(questions).then((answer: {tree: string[]}) => {
       const chosens = answer.tree.map(item => {
         return item.split(' ').slice(-1)[0]
       })
       if (answer.tree.includes('Done')) {
-        console.info(chosens);
+        const unchosens = treeLines.map(item => {
+          return item.split(' ').slice(-1)[0]
+        }).filter(item => {
+          return !chosens.includes(item)
+        })
+
+        const mockProviders = unchosens.map(item => {
+          return `{provide: ${item}, useClass: ${item}Mock},`
+        })
+        const providers = chosens.map(item => {
+          return `${item},`
+        })
+
+        console.info(providers.concat(mockProviders).join('\n'));
         return
       }
       this.renderPrompt(tree, chosens, maxLevel + 1)
     })
+  }
+
+  private getInquirer(): inquirer.Inquirer {
+    return inquirer
   }
 
 }

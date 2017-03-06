@@ -1,6 +1,7 @@
 import { Solved } from './solver';
 
 const archy = require('archy')
+const console = require('better-console')
 
 export interface TreeNode {
   path : string
@@ -46,6 +47,10 @@ export class TreeBuilder {
           }
         })
         .filter(treeNode => !!treeNode)
+    }
+
+    if (this.solvedPool.length === 0) {
+      throw new Error('There is no dependency on the selected file')
     }
 
     const root = this.solvedPool.find(node => node.level === 1)
