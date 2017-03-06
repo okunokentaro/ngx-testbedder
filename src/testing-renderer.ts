@@ -12,6 +12,9 @@ export class TestingRenderer extends AbstractRenderer {
         }
         const nextLevel = level + 1
         nodes.forEach((n: any) => {
+          if (!n) {
+            return
+          }
           result.push(`${nextLevel} ${n.label}`);
           f(n.nodes, nextLevel)
         })

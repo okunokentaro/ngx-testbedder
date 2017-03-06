@@ -16,6 +16,7 @@ export interface TreeNode {
 export class TreeBuilder {
 
   rawNodes = [] as Array<DependencyNode>
+  private alreadyAddedPaths = new Set<string>()
 
   build(): TreeNode {
     const rootNode = this.rawNodes.find(node => node.level === 1)
@@ -47,6 +48,10 @@ export class TreeBuilder {
       ? next.path
       : pathAndName.path
 
+    if (this.alreadyAddedPaths.has(path)) {
+      return
+    }
+
     const name = level === 1
       ? next.name
       : pathAndName.name
@@ -54,6 +59,8 @@ export class TreeBuilder {
     const childrenNodes = !!next
       ? circleFunction(next, level)
       : []
+
+    this.alreadyAddedPaths.add(path)
 
     return {
       path:  path,
