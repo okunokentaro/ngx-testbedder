@@ -44,7 +44,29 @@ export class TreeBuilder {
       })
     }
 
-    const built = buildTree(rootNode, 0)[0]
+    const built = buildTree(rootNode, 0)[0] as any
+
+    const ff = (_built: any) => {
+      const result = [] as string[]
+      const f = (nodes: any, level: number) => {
+        if (!nodes) {
+          return
+        }
+        const nextLevel = level + 1
+        nodes.forEach((n: any) => {
+          result.push(`${nextLevel} ${n.label}`);
+          f(n.nodes, nextLevel)
+        })
+      }
+
+      result.push(`${1} ${_built.label}`);
+      f(_built.nodes, 1)
+
+      return result.join('\n')
+    }
+
+    console.log(ff(built));
+
     return archy(built)
   }
 
