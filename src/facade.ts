@@ -4,12 +4,7 @@ import { Solver } from './solver';
 import { TreeBuilder } from './tree-builder';
 
 const findRoot = require('find-root')
-
-export interface Output {
-  path: string,
-  level: number,
-  dependenciesPathsAndNames: Array<{path: string, name: string}>,
-}
+const console = require('better-console')
 
 export class Facade {
 
@@ -32,49 +27,56 @@ export class Facade {
     const builder = new TreeBuilder()
 
     const dispose = this.solver.addListenerOutput(obj => {
-      builder.outputs.push({
-        path:         obj.filePath,
-        level:        obj.currentLevel,
+      builder.rawNodes.push({
+        path:                      obj.filePath,
+        level:                     obj.currentLevel,
         dependenciesPathsAndNames: obj.absoluteFilePathsAndNames,
       })
 
-      obj.absoluteFilePathsAndNames.forEach(filePathAndName => {
-        const nextFilePath = filePathAndName.path
-        const rootPath = (() => {
-          const rootPathIsChecked = Array.from(this.rootPaths)
-            .some(_rootPath => nextFilePath.includes(_rootPath))
-          if (!rootPathIsChecked) {
-            return findRoot(nextFilePath)
+      obj.absoluteFilePathsAndNames
+        .map(filePathAndName => {
+          const nextFilePath = filePathAndName.path
+          const rootPath     = this.getRootPath(nextFilePath)
+          this.rootPaths.add(rootPath)
+
+          const nextLevel = obj.currentLevel + 1
+
+          return {
+            nextFilePath,
+            rootPath,
+            nextLevel
           }
+        })
+        .filter((v) => !Array.from(this.solved).includes(v.nextFilePath))
+        .forEach(solverParams => {
+          const newSolver = new Solver(
+            solverParams.nextFilePath,
+            this.program,
+            solverParams.rootPath,
+            solverParams.nextLevel,
+            this.solver.outputEmitter
+          )
+          newSolver.run()
 
-          return Array.from(this.rootPaths)
-            .map(v => nextFilePath.match(v))
-            .filter(v => !!v)[0][0]
-        })()
-
-        this.rootPaths.add(rootPath)
-
-        if (Array.from(this.solved).includes(nextFilePath)) {
-          return
-        }
-
-        const nextLevel = obj.currentLevel + 1
-        const newSolver = new Solver(
-          nextFilePath,
-          this.program,
-          rootPath,
-          nextLevel,
-          this.solver.outputEmitter
-        )
-        newSolver.run()
-
-        this.solved.add(nextFilePath)
-      })
+          this.solved.add(solverParams.nextFilePath)
+        })
     })
     this.solver.run()
     dispose()
 
     builder.build()
+  }
+
+  private getRootPath(filePath: string) {
+    const rootPathIsChecked = Array.from(this.rootPaths)
+      .some(_rootPath => filePath.includes(_rootPath))
+    if (!rootPathIsChecked) {
+      return findRoot(filePath)
+    }
+
+    return Array.from(this.rootPaths)
+      .map(v => filePath.match(v))
+      .filter(v => !!v)[0][0]
   }
 
 }

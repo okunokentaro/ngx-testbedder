@@ -1,35 +1,40 @@
-import { Output } from './facade'
 const archy = require('archy')
+
+export interface DependencyNode {
+  path:  string,
+  level: number,
+  dependenciesPathsAndNames: Array<{path: string, name: string}>,
+}
 
 export class TreeBuilder {
 
-  outputs = [] as Array<Output>
+  rawNodes = [] as Array<DependencyNode>
 
   build() {
-    const outputs = this.outputs
+    const rootNode = this.rawNodes.find(node => node.level === 1)
 
-    const first = outputs.find(output => output.level === 1)
-
-    const fn = (output: Output, currentLevel: number): any[] => {
+    const buildTree = (node: DependencyNode, currentLevel: number): any[] => {
       const nextLevel = currentLevel + 1
-      return output.dependenciesPathsAndNames.map(pathAndName => {
-        const nexts = outputs.filter(output => output.level === nextLevel)
+
+      return node.dependenciesPathsAndNames.map(pathAndName => {
+        const nexts = this.rawNodes.filter(node => node.level === nextLevel)
         const next  = nexts.find(v => v.path === pathAndName.path)
 
-        const nodes = !!next ? fn(next, nextLevel) : []
+        const childrenNodes = !!next
+          ? buildTree(next, nextLevel)
+          : []
 
         return {
           // path: pathAndName.path,
           label: pathAndName.name,
-          nodes,
+          nodes: childrenNodes,
         }
       })
     }
 
-    const a = fn(first, 1)
-
-    const tree = archy(a[0])
-    console.log(tree);
+    const built      = buildTree(rootNode, 1)[0]
+    const renderable = archy(built)
+    console.log(renderable);
   }
 
 }
