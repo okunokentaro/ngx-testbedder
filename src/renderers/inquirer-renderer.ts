@@ -96,9 +96,16 @@ export class InquirerRenderer extends AbstractRenderer {
         )
       )
 
+      const imports       = this.formatImports(_chosens.filter(item => item !== doneText))
+      const mockImports   = this.formatMockImports(unchosens)
+      const providers     = this.formatProviders(_chosens.filter(item => item !== doneText))
       const mockProviders = this.formatMockProviders(unchosens)
-      const providers     = this.formatProviders(_chosens)
-      const result        = providers.concat(mockProviders).join('\n')
+
+      const result = imports
+        .concat(...mockImports)
+        .concat(...providers)
+        .concat(...mockProviders)
+        .join('\n')
 
       this.emitter.emit(resolveEventName, result)
     })
@@ -116,15 +123,30 @@ export class InquirerRenderer extends AbstractRenderer {
     return questionsText.split(' ').slice(-1)[0]
   }
 
+  private formatProviders(classNames: string[]): string[] {
+    return classNames
+      .map(item => `${item},`)
+  }
+
   private formatMockProviders(classNames: string[]): string[] {
     return classNames
       .map(cls => `{provide: ${cls}, useClass: ${cls}Mock},`)
   }
 
-  private formatProviders(classNames: string[]): string[] {
+  private formatImports(classNames: string[]): string[] {
     return classNames
-      .filter(item => item !== doneText)
-      .map(item => `${item},`)
+      .map(cls => {
+        const path = this.treeWithMap.pathMap.get(cls)
+        return `import { ${cls} } from '${path}';`
+      })
+  }
+
+  private formatMockImports(classNames: string[]): string[] {
+    return classNames
+      .map(cls => {
+        const path = this.treeWithMap.pathMap.get(cls)
+        return `import { ${cls}Mock } from '${path}';`
+      })
   }
 
 }
