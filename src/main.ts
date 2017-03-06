@@ -1,5 +1,6 @@
 import * as yargs from 'yargs'
 import { Facade } from './facade';
+import { ArchyRenderer } from './archy-renderer';
 
 const packpath = require('packpath')
 
@@ -14,7 +15,8 @@ const main = (argv: any) => {
     return
   }
   const tsconfig = require('../../tsconfig.json')
-  const facade   = new Facade(arg, tsconfig, packpath.self())
+  const renderer = new ArchyRenderer()
+  const facade   = new Facade(arg, tsconfig, packpath.self(), renderer)
 
   const result = facade.run()
   console.log(result)

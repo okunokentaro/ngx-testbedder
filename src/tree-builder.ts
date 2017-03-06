@@ -7,11 +7,16 @@ export interface DependencyNode {
   dependenciesPathsAndNames: Array<{path: string, name: string}>,
 }
 
+export interface TreeNode {
+  label: string
+  nodes: TreeNode[]
+}
+
 export class TreeBuilder {
 
   rawNodes = [] as Array<DependencyNode>
 
-  build(): string {
+  build(): TreeNode {
     const rootNode = this.rawNodes.find(node => node.level === 1)
 
     const buildTree = (node: DependencyNode, currentLevel: number): any[] => {
@@ -44,30 +49,7 @@ export class TreeBuilder {
       })
     }
 
-    const built = buildTree(rootNode, 0)[0] as any
-
-    const ff = (_built: any) => {
-      const result = [] as string[]
-      const f = (nodes: any, level: number) => {
-        if (!nodes) {
-          return
-        }
-        const nextLevel = level + 1
-        nodes.forEach((n: any) => {
-          result.push(`${nextLevel} ${n.label}`);
-          f(n.nodes, nextLevel)
-        })
-      }
-
-      result.push(`${1} ${_built.label}`);
-      f(_built.nodes, 1)
-
-      return result.join('\n')
-    }
-
-    console.log(ff(built));
-
-    return archy(built)
+    return buildTree(rootNode, 0)[0] as TreeNode
   }
 
 }

@@ -2,7 +2,8 @@ import * as ts from 'typescript'
 import * as pathModule from 'path'
 
 import { Solver } from './solver';
-import { TreeBuilder } from './tree-builder';
+import { TreeBuilder, TreeNode } from './tree-builder';
+import { AbstractRenderer } from './abstract-renderer';
 
 const findRoot = require('find-root')
 
@@ -19,6 +20,7 @@ export class Facade {
     filePath: string,
     private tsconfig: any,
     private projectRoot: string,
+    private renderer: AbstractRenderer,
   ) {
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program = ts.createProgram([this.filePath], this.tsconfig)
@@ -62,7 +64,9 @@ export class Facade {
     this.solver.run()
     dispose()
 
-    return builder.build()
+    const built = builder.build()
+
+    return this.renderer.render(built)
   }
 
   private getRootPath(filePath: string) {
