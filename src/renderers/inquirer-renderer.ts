@@ -5,17 +5,26 @@ import { TreeLevelMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 import { ArchyRenderer } from './archy-renderer';
 
+const resolveEventName = 'resolve'
+interface SelfEventEmitter extends EventEmitter {
+  on: (event: typeof resolveEventName, listener: (res: string) => void) => this
+}
+
 export class InquirerRenderer extends AbstractRenderer {
 
-  private emitter: EventEmitter
+  private emitter: SelfEventEmitter
   private levelMap: Map<string, number>
+
+  constructor() {
+    super()
+    this.emitter = new EventEmitter() as SelfEventEmitter
+  }
 
   render(treeLevelMap: TreeLevelMap): Promise<string> {
     this.question(treeLevelMap)
-    this.emitter = new EventEmitter()
 
     return new Promise(resolve => {
-      this.emitter.on('resolve', (res: string) => {
+      this.emitter.on(resolveEventName, (res: string) => {
         resolve(res)
       })
     })
@@ -103,7 +112,7 @@ export class InquirerRenderer extends AbstractRenderer {
           return `${item},`
         })
 
-        this.emitter.emit('resolve', providers.concat(mockProviders).join('\n'))
+        this.emitter.emit(resolveEventName, providers.concat(mockProviders).join('\n'))
         return
       }
       this.renderPrompt(treeLevelMap, chosens, maxLevel + 1)
