@@ -1,8 +1,8 @@
 import * as ts from 'typescript'
 import * as pathModule from 'path'
 
-import { Solver } from './solver';
-import { TreeBuilder, DependencyNode } from './tree-builder';
+import { Solver, DependencyNode } from './solver';
+import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 
 const findRoot = require('find-root')
@@ -40,16 +40,16 @@ export class Facade {
     return this.renderer.render(built)
   }
 
-  private dealWithSolved(obj: DependencyNode) {
-    this.builder.rawNodes.push(obj)
+  private dealWithSolved(solved: DependencyNode) {
+    this.builder.rawNodes.push(solved)
 
-    obj.dependenciesPathsAndNames
+    solved.dependenciesPathsAndNames
       .map(pathAndName => {
         const nextFilePath = pathAndName.path
         const rootPath     = this.getRootPath(nextFilePath)
         this.rootPaths.add(rootPath)
 
-        const nextLevel = obj.level + 1
+        const nextLevel = solved.level + 1
 
         return {
           nextFilePath,

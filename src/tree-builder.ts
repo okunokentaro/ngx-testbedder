@@ -1,11 +1,6 @@
-const archy = require('archy')
+import { DependencyNode } from './solver';
 
-export interface DependencyNode {
-  path:  string,
-  name:  string,
-  level: number,
-  dependenciesPathsAndNames: Array<{path: string, name: string}>,
-}
+const archy = require('archy')
 
 export interface TreeNode {
   path : string

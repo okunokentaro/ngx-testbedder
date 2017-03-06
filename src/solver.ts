@@ -7,7 +7,13 @@ import { InjectableDetector } from './detectors/injectable-detector'
 import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
-import { DependencyNode } from './tree-builder';
+
+export interface DependencyNode {
+  path:  string,
+  name:  string,
+  level: number,
+  dependenciesPathsAndNames: Array<{path: string, name: string}>,
+}
 
 const console = require('better-console')
 
