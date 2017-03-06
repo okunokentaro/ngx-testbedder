@@ -207,3 +207,31 @@ test(async t => {
 
   t.deepEqual(result, expected)
 })
+
+test(async t => {
+  const renderer = new InquirerRenderer()
+  const facade   = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      renderer,
+    }
+  )
+
+  makeInquirerStub(renderer, [
+    'Done, AService, ├── BService',
+  ])
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
+  const expected = [
+    'AService,',
+    'BService,',
+    '{provide: DService, useClass: DServiceMock},',
+    '{provide: EService, useClass: EServiceMock},',
+    '{provide: FService, useClass: FServiceMock},',
+    '{provide: CService, useClass: CServiceMock},',
+  ]
+
+  t.deepEqual(result, expected)
+})
