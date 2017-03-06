@@ -2,6 +2,7 @@ import * as ts from 'typescript'
 
 import { isTypeReference, isImportDeclaration, isNamedImports } from '../type-guards'
 import { AbstractDetector } from './abstract-detector'
+import { ClassLocation } from '../class-location';
 
 export class ImportDetector extends AbstractDetector {
 
@@ -14,9 +15,13 @@ export class ImportDetector extends AbstractDetector {
     super()
   }
 
-  detect(): Map<string, string> {
+  detect(): ClassLocation[] {
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
-    return this.paths
+
+    return Array.from(this.paths.keys())
+      .map(k => {
+        return new ClassLocation(k, this.paths.get(k))
+      })
   }
 
   private visit(node: ts.Node) {

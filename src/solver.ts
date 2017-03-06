@@ -7,12 +7,13 @@ import { InjectableDetector } from './detectors/injectable-detector'
 import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
+import { ClassLocation } from './class-location';
 
 export interface Solved {
   path:  string,
   name:  string,
   level: number,
-  dependencies: Array<{path: string, name: string}>,
+  dependencies: ClassLocation[],
 }
 
 const console = require('better-console')
@@ -60,20 +61,17 @@ export class Solver {
     }, [] as TextRangeTuple[])
 
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
-    const pathAndNames = new ImportDetector(thisSource, params.injectNames).detect()
+    const classLocations = new ImportDetector(thisSource, params.injectNames).detect()
 
-    const pathsExcludeNodeModules = Array.from(pathAndNames.keys()).filter(_path => {
-      return /^\./.test(_path)
+    const classLocationsExcludeNodeModules = classLocations.filter(classLocation => {
+      return /^\./.test(classLocation.path)
     })
 
-    const dependencies = pathsExcludeNodeModules.map(_path => {
+    const dependencies = classLocationsExcludeNodeModules.map(classLocation => {
       const fileDir = getFileDir(this.filePath)
-      const absolutePath = [pathModule.resolve(fileDir, _path), typeScriptExtension]
+      const absolutePath = [pathModule.resolve(fileDir, classLocation.path), typeScriptExtension]
         .join(extensionSeparator)
-      return {
-        path: absolutePath,
-        name: pathAndNames.get(_path),
-      }
+      return new ClassLocation(absolutePath, classLocation.name)
     })
 
     if (0 < dependencies.length) {
