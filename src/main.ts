@@ -13,7 +13,7 @@ const main = (argv: any) => {
     console.error('[ERROR] A file path is required!')
     return
   }
-  const tsconfig = require('../sample/tsconfig.json')
+  const tsconfig = require('../../tsconfig.json')
   const facade   = new Facade(arg, tsconfig, packpath.self())
 
   const result = facade.run()

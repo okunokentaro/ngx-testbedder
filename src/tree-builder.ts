@@ -2,6 +2,7 @@ const archy = require('archy')
 
 export interface DependencyNode {
   path:  string,
+  name:  string,
   level: number,
   dependenciesPathsAndNames: Array<{path: string, name: string}>,
 }
@@ -18,11 +19,22 @@ export class TreeBuilder {
 
       return node.dependenciesPathsAndNames.map(pathAndName => {
         const nexts = this.rawNodes.filter(node => node.level === nextLevel)
-        const next  = nexts.find(v => v.path === pathAndName.path)
+
+        const next  = nextLevel === 1
+          ? nexts[0]
+          : nexts.find(v => v.path === pathAndName.path)
 
         const childrenNodes = !!next
           ? buildTree(next, nextLevel)
           : []
+
+        const path = nextLevel === 1
+          ? next.path
+          : pathAndName.path
+
+        const name = nextLevel === 1
+          ? next.name
+          : pathAndName.name
 
         return {
           // path: pathAndName.path,
@@ -32,7 +44,7 @@ export class TreeBuilder {
       })
     }
 
-    const built      = buildTree(rootNode, 1)[0]
+    const built = buildTree(rootNode, 0)[0]
     return archy(built)
   }
 

@@ -1,4 +1,5 @@
 import * as ts from 'typescript'
+import * as pathModule from 'path'
 
 import { Solver } from './solver';
 import { TreeBuilder } from './tree-builder';
@@ -7,30 +8,28 @@ const findRoot = require('find-root')
 
 export class Facade {
 
-  private program: ts.Program;
+  private filePath: string
+  private program: ts.Program
 
   private solver: Solver
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
 
   constructor(
-    private filePath: string,
+    filePath: string,
     private tsconfig: any,
     private projectRoot: string,
   ) {
+    this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program = ts.createProgram([this.filePath], this.tsconfig)
-    this.solver  = new Solver(filePath, this.program, projectRoot, 1)
+    this.solver  = new Solver(this.filePath, this.program, projectRoot, 1)
   }
 
   run(): string {
     const builder = new TreeBuilder()
 
     const dispose = this.solver.addListenerOutput(obj => {
-      builder.rawNodes.push({
-        path:                      obj.path,
-        level:                     obj.level,
-        dependenciesPathsAndNames: obj.dependenciesPathsAndNames,
-      })
+      builder.rawNodes.push(obj)
 
       obj.dependenciesPathsAndNames
         .map(pathAndName => {

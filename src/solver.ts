@@ -9,6 +9,8 @@ import { TextRangeTuple } from './main';
 import { EventEmitter } from 'events';
 import { DependencyNode } from './tree-builder';
 
+const console = require('better-console')
+
 const typeScriptExtension = 'ts'
 const extensionSeparator  = '.'
 
@@ -52,6 +54,7 @@ export class Solver {
     }, [] as TextRangeTuple[])
 
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
+    console.log('params', params);
     const pathAndNames = new ImportDetector(thisSource, params).detect()
 
     const pathsExcludeNodeModules = Array.from(pathAndNames.keys()).filter(_path => {
