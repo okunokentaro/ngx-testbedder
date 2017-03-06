@@ -13,7 +13,7 @@ export class TreeBuilder {
   solvedPool = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
 
-  build(): TreeNode {
+  build(): {treeNode: TreeNode, solveds: Solved[]} {
     const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
       if (!solved) {
         return []
@@ -46,9 +46,12 @@ export class TreeBuilder {
 
     const root = this.solvedPool.find(node => node.level === 1)
     return {
-      path:  root.path,
-      label: root.name,
-      nodes: buildChildren(1, root),
+      treeNode: {
+        path:  root.path,
+        label: root.name,
+        nodes: buildChildren(1, root),
+      },
+      solveds: this.solvedPool
     }
   }
 
