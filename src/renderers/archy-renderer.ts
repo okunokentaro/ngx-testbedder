@@ -6,8 +6,8 @@ const archy = require('archy')
 
 export class ArchyRenderer extends AbstractRenderer {
 
-  render(tree: {treeNode: TreeNode, solveds: Solved[]}): string {
-    return archy(tree.treeNode)
+  render(tree: {treeNode: TreeNode, solveds: Solved[]}): Promise<string> {
+    return Promise.resolve(archy(tree.treeNode))
   }
 
 }

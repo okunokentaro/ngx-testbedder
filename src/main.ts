@@ -17,7 +17,9 @@ const main = (argv: any) => {
   const renderer = new InquirerRenderer()
   const facade   = new Facade(arg, tsconfig, packpath.self(), renderer)
 
-  const result = facade.run()
+  facade.run().then(res => {
+    console.info(res)
+  })
 }
 
 main(yargs.argv)

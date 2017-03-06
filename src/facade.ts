@@ -30,7 +30,7 @@ export class Facade {
     this.builder  = new TreeBuilder()
   }
 
-  run(): string {
+  run(): Promise<string> {
     const dispose = this.solver.addListenerOutput(obj => {
       this.dealWithSolved(obj)
     })
@@ -42,7 +42,7 @@ export class Facade {
       return this.renderer.render(built)
     } catch(e) {
       console.info(e.message)
-      return ''
+      return Promise.resolve('')
     }
   }
 

@@ -1,4 +1,5 @@
 import * as inquirer from 'inquirer'
+import { EventEmitter } from 'events';
 
 import { TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
@@ -6,15 +7,21 @@ import { ArchyRenderer } from './archy-renderer';
 import { Solved } from '../solver';
 
 type TreeSolveds = {treeNode: TreeNode, solveds: Solved[]}
-type PromptTarget = {name: string, level: number}
 
 export class InquirerRenderer extends AbstractRenderer {
 
+  private emitter: EventEmitter
   private levelMap: Map<string, number>
 
-  render(tree: TreeSolveds): string {
+  render(tree: TreeSolveds): Promise<string> {
     this.question(tree)
-    return ''
+    this.emitter = new EventEmitter()
+
+    return new Promise(resolve => {
+      this.emitter.on('resolve', (res: string) => {
+        resolve(res)
+      })
+    })
   }
 
   private question(tree: TreeSolveds) {
@@ -26,7 +33,7 @@ export class InquirerRenderer extends AbstractRenderer {
     this.renderPrompt(tree, [tree.treeNode.label], 1)
   }
 
-  private renderPrompt(tree: TreeSolveds, chosens: string[], maxLevel: number) {
+  private async renderPrompt(tree: TreeSolveds, chosens: string[], maxLevel: number) {
     const decimateTree = (tree: TreeNode, _maxLevel: number): TreeNode => {
       if (_maxLevel < this.levelMap.get(tree.label)) {
         return {
@@ -52,7 +59,8 @@ export class InquirerRenderer extends AbstractRenderer {
     const decimatedTree = decimateTree(tree.treeNode, maxLevel)
 
     const archy = new ArchyRenderer()
-    const treeLines = ['Done'].concat(archy.render({treeNode: decimatedTree, solveds: tree.solveds}).split('\n').filter(l => !!l))
+    const archyResult = await archy.render({treeNode: decimatedTree, solveds: tree.solveds})
+    const treeLines = ['Done'].concat(archyResult.split('\n').filter(l => !!l))
 
     const defaultChosens = treeLines.map((item, idx) => {
       if (chosens.includes(item.split(' ').slice(-1)[0])) {
@@ -72,6 +80,7 @@ export class InquirerRenderer extends AbstractRenderer {
         pageSize: 31,
       },
     ]
+
     this.getInquirer().prompt(questions).then((answer: {tree: string[]}) => {
       const chosens = answer.tree.map(item => {
         return item.split(' ').slice(-1)[0]
@@ -90,7 +99,7 @@ export class InquirerRenderer extends AbstractRenderer {
           return `${item},`
         })
 
-        console.info(providers.concat(mockProviders).join('\n'));
+        this.emitter.emit('resolve', providers.concat(mockProviders).join('\n'))
         return
       }
       this.renderPrompt(tree, chosens, maxLevel + 1)

@@ -4,7 +4,7 @@ import { Solved } from '../solver';
 
 export class TestingRenderer extends AbstractRenderer {
 
-  render(tree: {treeNode: TreeNode, solveds: Solved[]}): string {
+  render(tree: {treeNode: TreeNode, solveds: Solved[]}): Promise<string> {
     const ff = (_built: TreeNode) => {
       const result = [] as string[]
       const f = (nodes: any, level: number) => {
@@ -23,7 +23,8 @@ export class TestingRenderer extends AbstractRenderer {
 
       return result.join('\n')
     }
-    return ff(tree.treeNode)
+
+    return Promise.resolve(ff(tree.treeNode))
   }
 
 }
