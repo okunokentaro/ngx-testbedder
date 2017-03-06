@@ -9,6 +9,8 @@ export interface TreeNode {
   nodes: TreeNode[]
 }
 
+export type TreeLevelMap = {treeNode: TreeNode, levelMap: Map<string, number>}
+
 export class TreeBuilder {
 
   solvedPool = [] as Solved[]
@@ -20,7 +22,7 @@ export class TreeBuilder {
     this.allowDuplicates = options.allowDuplicates
   }
 
-  build(): {treeNode: TreeNode, solveds: Solved[]} {
+  build(): TreeLevelMap {
     const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
       if (!solved) {
         return []
@@ -58,13 +60,19 @@ export class TreeBuilder {
     }
 
     const root = this.solvedPool.find(node => node.level === 1)
+
+    const levelMap = new Map<string, number>()
+    this.solvedPool.forEach(v => {
+      levelMap.set(v.name, v.level)
+    })
+
     return {
       treeNode: {
         path:  root.path,
         label: root.name,
         nodes: buildChildren(1, root),
       },
-      solveds: this.solvedPool
+      levelMap
     }
   }
 

@@ -1,8 +1,7 @@
-import { TreeNode } from '../tree-builder';
-import { Solved } from '../solver';
+import { TreeLevelMap } from '../tree-builder';
 
 export abstract class AbstractRenderer {
 
-  abstract render(tree: {treeNode: TreeNode, solveds: Solved[]}): Promise<string>
+  abstract render(treeLevelMap: TreeLevelMap): Promise<string>
 
 }

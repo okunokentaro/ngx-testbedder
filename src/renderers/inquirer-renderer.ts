@@ -1,20 +1,17 @@
 import * as inquirer from 'inquirer'
 import { EventEmitter } from 'events';
 
-import { TreeNode } from '../tree-builder';
+import { TreeLevelMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 import { ArchyRenderer } from './archy-renderer';
-import { Solved } from '../solver';
-
-type TreeSolveds = {treeNode: TreeNode, solveds: Solved[]}
 
 export class InquirerRenderer extends AbstractRenderer {
 
   private emitter: EventEmitter
   private levelMap: Map<string, number>
 
-  render(tree: TreeSolveds): Promise<string> {
-    this.question(tree)
+  render(treeLevelMap: TreeLevelMap): Promise<string> {
+    this.question(treeLevelMap)
     this.emitter = new EventEmitter()
 
     return new Promise(resolve => {
@@ -24,16 +21,12 @@ export class InquirerRenderer extends AbstractRenderer {
     })
   }
 
-  private question(tree: TreeSolveds) {
-    this.levelMap = new Map<string, number>()
-    tree.solveds.map(v => {
-      this.levelMap.set(v.name, v.level)
-    })
-
-    this.renderPrompt(tree, [tree.treeNode.label], 1)
+  private question(treeLevelMap: TreeLevelMap) {
+    this.levelMap = treeLevelMap.levelMap
+    this.renderPrompt(treeLevelMap, [treeLevelMap.treeNode.label], 1)
   }
 
-  private async renderPrompt(tree: TreeSolveds, chosens: string[], maxLevel: number) {
+  private async renderPrompt(treeLevelMap: TreeLevelMap, chosens: string[], maxLevel: number) {
     const decimateTree = (tree: TreeNode, _maxLevel: number): TreeNode => {
       if (_maxLevel < this.levelMap.get(tree.label)) {
         return {
@@ -56,10 +49,10 @@ export class InquirerRenderer extends AbstractRenderer {
       }
     }
 
-    const decimatedTree = decimateTree(tree.treeNode, maxLevel)
+    const decimatedTree = decimateTree(treeLevelMap.treeNode, maxLevel)
 
     const archy = new ArchyRenderer()
-    const archyResult = await archy.render({treeNode: decimatedTree, solveds: tree.solveds})
+    const archyResult = await archy.render({treeNode: decimatedTree, levelMap: treeLevelMap.levelMap})
     const treeLines = ['Done'].concat(archyResult.split('\n').filter(l => !!l))
 
     const defaultChosens = treeLines.map((item, idx) => {
@@ -113,7 +106,7 @@ export class InquirerRenderer extends AbstractRenderer {
         this.emitter.emit('resolve', providers.concat(mockProviders).join('\n'))
         return
       }
-      this.renderPrompt(tree, chosens, maxLevel + 1)
+      this.renderPrompt(treeLevelMap, chosens, maxLevel + 1)
     })
   }
 

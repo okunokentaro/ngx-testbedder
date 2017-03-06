@@ -1,30 +1,33 @@
-import { TreeNode } from '../tree-builder';
+import { TreeLevelMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
-import { Solved } from '../solver';
 
 export class TestingRenderer extends AbstractRenderer {
 
-  render(tree: {treeNode: TreeNode, solveds: Solved[]}): Promise<string> {
-    const ff = (_built: TreeNode) => {
-      const result = [] as string[]
-      const f = (nodes: any, level: number) => {
-        if (!nodes) {
-          return
-        }
-        const nextLevel = level + 1
-        nodes.forEach((n: any) => {
-          result.push(`${nextLevel} ${n.label}`);
-          f(n.nodes, nextLevel)
-        })
+  render(treeLevelMap: TreeLevelMap): Promise<string> {
+    return Promise.resolve(this.renderImpl(treeLevelMap.treeNode))
+  }
+
+  private renderImpl(node: TreeNode): string {
+    const result = [] as string[]
+
+    const traverse = (node: TreeNode, level: number) => {
+      result.push(this.format(level, node.label))
+
+      const nodes = node.nodes
+      if (!nodes) {
+        return
       }
 
-      result.push(`${1} ${_built.label}`);
-      f(_built.nodes, 1)
-
-      return result.join('\n')
+      const nextLevel = level + 1
+      nodes.forEach(n => traverse(n, nextLevel))
     }
 
-    return Promise.resolve(ff(tree.treeNode))
+    traverse(node, 1)
+    return result.join('\n')
+  }
+
+  private format(level: number, label: string) {
+    return [level, label].join(' ')
   }
 
 }
