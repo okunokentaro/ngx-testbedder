@@ -3,11 +3,10 @@ const archy = require('archy')
 
 export class TreeBuilder {
 
-  build(outputs: Output[]) {
-    const maxLevel = outputs.reduce((level, output) => {
-      return level < output.level ? output.level : level
-    }, 0)
+  outputs = [] as Array<Output>
 
+  build() {
+    const outputs = this.outputs
 
     const first = outputs.find(output => output.level === 1)
 

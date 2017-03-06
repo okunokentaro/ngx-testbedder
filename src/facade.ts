@@ -18,7 +18,6 @@ export class Facade {
   private solver: Solver
   private solved    = new Set<string>()
   private rootPaths = new Set<string>()
-  private outputs = [] as Array<Output>
 
   constructor(
     private filePath: string,
@@ -30,8 +29,10 @@ export class Facade {
   }
 
   run() {
+    const builder = new TreeBuilder()
+
     const dispose = this.solver.addListenerOutput(obj => {
-      this.outputs.push({
+      builder.outputs.push({
         path:         obj.filePath,
         level:        obj.currentLevel,
         dependenciesPathsAndNames: obj.absoluteFilePathsAndNames,
@@ -73,8 +74,7 @@ export class Facade {
     this.solver.run()
     dispose()
 
-    const builder = new TreeBuilder()
-    builder.build(this.outputs)
+    builder.build()
   }
 
 }

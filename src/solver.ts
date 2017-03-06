@@ -56,7 +56,6 @@ export class Solver {
       return output.concat(v.ranges)
     }, [] as TextRangeTuple[])
 
-    console.log('classPositions', classPositions);
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
     const detector     = new ImportDetector(thisSource, params)
     const pathAndNames = detector.detect()
