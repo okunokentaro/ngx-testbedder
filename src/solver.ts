@@ -18,14 +18,7 @@ export interface Solved {
 
 const console = require('better-console')
 
-const typeScriptExtension = 'ts'
-const extensionSeparator  = '.'
-
 const outputEventName = 'output'
-
-const getFileDir = (pathWithFileName: string) => {
-  return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
-}
 
 export class Solver {
 
@@ -63,16 +56,7 @@ export class Solver {
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
     const classLocations = new ImportDetector(thisSource, params.injectNames).detect()
 
-    const classLocationsExcludeNodeModules = classLocations.filter(classLocation => {
-      return /^\./.test(classLocation.path)
-    })
-
-    const dependencies = classLocationsExcludeNodeModules.map(classLocation => {
-      const fileDir = getFileDir(this.filePath)
-      const absolutePath = [pathModule.resolve(fileDir, classLocation.path), typeScriptExtension]
-        .join(extensionSeparator)
-      return new ClassLocation(absolutePath, classLocation.name)
-    })
+    const dependencies = classLocations.hoge(this.filePath)
 
     if (0 < dependencies.length) {
       this.outputEmitter.emit(outputEventName, {

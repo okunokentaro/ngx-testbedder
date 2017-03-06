@@ -3,10 +3,11 @@ import * as ts from 'typescript'
 import { isTypeReference, isImportDeclaration, isNamedImports } from '../type-guards'
 import { AbstractDetector } from './abstract-detector'
 import { ClassLocation } from '../class-location';
+import { ClassLocations } from '../class-locations';
 
 export class ImportDetector extends AbstractDetector {
 
-  private paths = new Map<string, string>()
+  private pathMap = new Map<string, string>()
 
   constructor(
     private sourceFile: ts.SourceFile,
@@ -15,13 +16,9 @@ export class ImportDetector extends AbstractDetector {
     super()
   }
 
-  detect(): ClassLocation[] {
+  detect(): ClassLocations {
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
-
-    return Array.from(this.paths.keys())
-      .map(k => {
-        return new ClassLocation(k, this.paths.get(k))
-      })
+    return this.makeClassLocations(this.pathMap)
   }
 
   private visit(node: ts.Node) {
@@ -37,7 +34,7 @@ export class ImportDetector extends AbstractDetector {
       if (this.params.includes(elem.name.text)) {
         if ((node.moduleSpecifier as ts.StringLiteral).text) {
           const path = (node.moduleSpecifier as ts.StringLiteral).text
-          this.paths.set(path, elem.name.text)
+          this.pathMap.set(path, elem.name.text)
         }
       }
     })
@@ -48,6 +45,13 @@ export class ImportDetector extends AbstractDetector {
       return []
     }
     return Array.from(node.importClause.namedBindings.elements)
+  }
+
+  private makeClassLocations(pathMap: Map<string, string>): ClassLocations {
+    return new ClassLocations(Array.from(pathMap.keys())
+      .map(k => {
+        return new ClassLocation(k, pathMap.get(k))
+      }))
   }
 
 }
