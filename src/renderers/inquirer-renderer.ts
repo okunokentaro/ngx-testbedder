@@ -74,29 +74,30 @@ export class InquirerRenderer extends AbstractRenderer {
         new Set(answer.tree.map(item => this.getClassName(item)))
       )
 
-      if (answer.tree.includes(doneText)) {
-        const unchosens = Array.from(
-          new Set(
-            treeLines
-              .filter(item => item !== doneText)
-              .map(item => this.getClassName(item))
-              .filter(item => !chosens.includes(item))
-          )
-        )
-
-        const mockProviders = unchosens.map(item => {
-          return `{provide: ${item}, useClass: ${item}Mock},`
-        })
-
-        const providers = chosens.filter(item => item !== doneText).map(item => {
-          return `${item},`
-        })
-
-        const result = providers.concat(mockProviders).join('\n')
-        this.emitter.emit(resolveEventName, result)
+      if (!answer.tree.includes(doneText)) {
+        this.renderPrompt(treeLevelMap, chosens, _maxLevel + 1)
         return
       }
-      this.renderPrompt(treeLevelMap, chosens, _maxLevel + 1)
+
+      const unchosens = Array.from(
+        new Set(
+          treeLines
+            .filter(item => item !== doneText)
+            .map(item => this.getClassName(item))
+            .filter(item => !chosens.includes(item))
+        )
+      )
+
+      const mockProviders = unchosens.map(item => {
+        return `{provide: ${item}, useClass: ${item}Mock},`
+      })
+
+      const providers = chosens.filter(item => item !== doneText).map(item => {
+        return `${item},`
+      })
+
+      const result = providers.concat(mockProviders).join('\n')
+      this.emitter.emit(resolveEventName, result)
     })
   }
 
