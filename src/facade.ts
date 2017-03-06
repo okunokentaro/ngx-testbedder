@@ -1,7 +1,7 @@
 import * as ts from 'typescript'
 import * as pathModule from 'path'
 
-import { Solver, DependencyNode } from './solver';
+import { Solver, Solved } from './solver';
 import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 
@@ -40,7 +40,7 @@ export class Facade {
     return this.renderer.render(built)
   }
 
-  private dealWithSolved(solved: DependencyNode) {
+  private dealWithSolved(solved: Solved) {
     this.builder.rawNodes.push(solved)
 
     solved.dependenciesPathsAndNames

@@ -8,7 +8,7 @@ import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
 
-export interface DependencyNode {
+export interface Solved {
   path:  string,
   name:  string,
   level: number,
@@ -82,14 +82,14 @@ export class Solver {
         path:  this.filePath,
         name:  params.includingClassName,
         level: this.level
-      } as DependencyNode)
+      } as Solved)
     }
   }
 
   /**
    * @returns disposeFunction
    */
-  addListenerOutput(callback: (v: DependencyNode) => void): () => void {
+  addListenerOutput(callback: (v: Solved) => void): () => void {
     const disposer = this.outputEmitter.on(outputEventName, callback)
     return () => disposer.removeListener(outputEventName, callback)
   }

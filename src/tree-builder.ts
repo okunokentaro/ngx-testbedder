@@ -1,4 +1,4 @@
-import { DependencyNode } from './solver';
+import { Solved } from './solver';
 
 const archy = require('archy')
 
@@ -10,16 +10,16 @@ export interface TreeNode {
 
 export class TreeBuilder {
 
-  rawNodes = [] as Array<DependencyNode>
+  rawNodes = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
 
   build(): TreeNode {
     const rootNode = this.rawNodes.find(node => node.level === 1)
 
-    const buildTree = (node: DependencyNode, currentLevel: number): TreeNode[] => {
+    const buildTree = (solved: Solved, currentLevel: number): TreeNode[] => {
       const nextLevel = currentLevel + 1
 
-      return node.dependenciesPathsAndNames.map(pathAndName => {
+      return solved.dependenciesPathsAndNames.map(pathAndName => {
         const nexts = this.rawNodes.filter(node => node.level === nextLevel)
 
         const next  = nextLevel === 1
@@ -34,13 +34,13 @@ export class TreeBuilder {
   }
 
   private createTreeNode(
-    next:        DependencyNode,
+    solved:      Solved,
     pathAndName: {path: string, name: string},
     level:       number,
-    circleFunction: (node: DependencyNode, currentLevel: number) => TreeNode[]
+    circleFunction: (node: Solved, currentLevel: number) => TreeNode[]
   ): TreeNode {
     const path = level === 1
-      ? next.path
+      ? solved.path
       : pathAndName.path
 
     if (this.alreadyAddedPaths.has(path)) {
@@ -48,11 +48,11 @@ export class TreeBuilder {
     }
 
     const name = level === 1
-      ? next.name
+      ? solved.name
       : pathAndName.name
 
-    const childrenNodes = !!next
-      ? circleFunction(next, level)
+    const childrenNodes = !!solved
+      ? circleFunction(solved, level)
       : []
 
     this.alreadyAddedPaths.add(path)
