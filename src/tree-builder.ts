@@ -32,7 +32,7 @@ export class TreeBuilder {
           : nexts.find(v => v.path === pathAndName.path)
 
         return this.createTreeNode(next, pathAndName, nextLevel, buildTree)
-      })
+      }).filter(v => !!v)
     }
 
     return buildTree(rootNode, 0)[0] as TreeNode
