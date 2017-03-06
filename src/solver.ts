@@ -12,7 +12,7 @@ export interface Solved {
   path:  string,
   name:  string,
   level: number,
-  dependenciesPathsAndNames: Array<{path: string, name: string}>,
+  dependencies: Array<{path: string, name: string}>,
 }
 
 const console = require('better-console')
@@ -66,7 +66,7 @@ export class Solver {
       return /^\./.test(_path)
     })
 
-    const dependenciesPathsAndNames = pathsExcludeNodeModules.map(_path => {
+    const dependencies = pathsExcludeNodeModules.map(_path => {
       const fileDir = getFileDir(this.filePath)
       const absolutePath = [pathModule.resolve(fileDir, _path), typeScriptExtension]
         .join(extensionSeparator)
@@ -76,9 +76,9 @@ export class Solver {
       }
     })
 
-    if (0 < dependenciesPathsAndNames.length) {
+    if (0 < dependencies.length) {
       this.outputEmitter.emit(outputEventName, {
-        dependenciesPathsAndNames,
+        dependencies,
         path:  this.filePath,
         name:  params.includingClassName,
         level: this.level

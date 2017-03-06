@@ -19,7 +19,7 @@ export class TreeBuilder {
     const buildTree = (solved: Solved, currentLevel: number): TreeNode[] => {
       const nextLevel = currentLevel + 1
 
-      return solved.dependenciesPathsAndNames.map(pathAndName => {
+      return solved.dependencies.map(pathAndName => {
         const nexts = this.solvedPool.filter(node => node.level === nextLevel)
 
         const next  = nextLevel === 1
