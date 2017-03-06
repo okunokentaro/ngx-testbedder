@@ -60,11 +60,11 @@ export class InquirerRenderer extends AbstractRenderer {
 
     const questions = [
       {
-        type: 'checkbox',
-        name: 'tree',
-        message: 'Is this for delivery?',
-        choices: treeLines,
-        default: defaultChosens,
+        type:     'checkbox',
+        name:     'tree',
+        message:  'Which module do you use as real?',
+        choices:  treeLines,
+        default:  defaultChosens,
         pageSize: 31,
       },
     ]
