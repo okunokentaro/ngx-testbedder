@@ -10,6 +10,8 @@ interface SelfEventEmitter extends EventEmitter {
   on: (event: typeof resolveEventName, listener: (res: string) => void) => this
 }
 
+const doneText = 'Done'
+
 export class InquirerRenderer extends AbstractRenderer {
 
   private emitter: SelfEventEmitter
@@ -62,7 +64,7 @@ export class InquirerRenderer extends AbstractRenderer {
 
     const archy = new ArchyRenderer()
     const archyResult = await archy.render({treeNode: decimatedTree, levelMap: treeLevelMap.levelMap})
-    const treeLines = ['Done'].concat(archyResult.split('\n').filter(l => !!l))
+    const treeLines = [doneText].concat(archyResult.split('\n').filter(l => !!l))
 
     const defaultChosens = treeLines.map((item, idx) => {
       if (chosens.includes(item.split(' ').slice(-1)[0])) {
@@ -92,8 +94,8 @@ export class InquirerRenderer extends AbstractRenderer {
         )
       })())
 
-      if (answer.tree.includes('Done')) {
-        const treeLinesExcludeDone = treeLines.filter(item => item !== 'Done')
+      if (answer.tree.includes(doneText)) {
+        const treeLinesExcludeDone = treeLines.filter(item => item !== doneText)
 
         const unchosens = Array.from(
           new Set(
@@ -108,7 +110,7 @@ export class InquirerRenderer extends AbstractRenderer {
         const mockProviders = unchosens.map(item => {
           return `{provide: ${item}, useClass: ${item}Mock},`
         })
-        const providers = chosens.filter(item => item !== 'Done').map(item => {
+        const providers = chosens.filter(item => item !== doneText).map(item => {
           return `${item},`
         })
 
