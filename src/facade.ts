@@ -22,7 +22,7 @@ export class Facade {
     this.solver  = new Solver(filePath, this.program, projectRoot, 1)
   }
 
-  run() {
+  run(): string {
     const builder = new TreeBuilder()
 
     const dispose = this.solver.addListenerOutput(obj => {
@@ -63,7 +63,7 @@ export class Facade {
     this.solver.run()
     dispose()
 
-    builder.build()
+    return builder.build()
   }
 
   private getRootPath(filePath: string) {

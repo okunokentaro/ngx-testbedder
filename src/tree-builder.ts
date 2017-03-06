@@ -10,7 +10,7 @@ export class TreeBuilder {
 
   rawNodes = [] as Array<DependencyNode>
 
-  build() {
+  build(): string {
     const rootNode = this.rawNodes.find(node => node.level === 1)
 
     const buildTree = (node: DependencyNode, currentLevel: number): any[] => {
@@ -33,8 +33,7 @@ export class TreeBuilder {
     }
 
     const built      = buildTree(rootNode, 1)[0]
-    const renderable = archy(built)
-    console.log(renderable);
+    return archy(built)
   }
 
 }

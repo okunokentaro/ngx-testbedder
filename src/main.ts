@@ -16,7 +16,8 @@ const main = (argv: any) => {
   const tsconfig = require('../sample/tsconfig.json')
   const facade   = new Facade(arg, tsconfig, packpath.self())
 
-  facade.run()
+  const result = facade.run()
+  console.log(result)
 }
 
 main(yargs.argv)

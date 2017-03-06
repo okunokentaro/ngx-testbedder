@@ -28,11 +28,11 @@ export class Solver {
   }
 
   constructor(
-    private filePath: string,
-    private program: ts.Program,
+    private filePath:    string,
+    private program:     ts.Program,
     private projectRoot: string,
-    private level: number,
-    emitter?: EventEmitter,
+    private level:       number,
+    emitter?:            EventEmitter,
   ) {
     this.outputEmitter = !!emitter ? emitter : new EventEmitter()
   }
@@ -52,8 +52,7 @@ export class Solver {
     }, [] as TextRangeTuple[])
 
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
-    const detector     = new ImportDetector(thisSource, params)
-    const pathAndNames = detector.detect()
+    const pathAndNames = new ImportDetector(thisSource, params).detect()
 
     const pathsExcludeNodeModules = Array.from(pathAndNames.keys()).filter(_path => {
       return /^\./.test(_path)
