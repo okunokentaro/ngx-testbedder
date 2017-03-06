@@ -1,6 +1,7 @@
 import { Solved } from './solver';
 
 const archy = require('archy')
+const console = require('better-console')
 
 export interface TreeNode {
   path : string
@@ -8,12 +9,14 @@ export interface TreeNode {
   nodes: TreeNode[]
 }
 
+const allowDuplicates = true
+
 export class TreeBuilder {
 
   solvedPool = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
 
-  build(): TreeNode {
+  build(): {treeNode: TreeNode, solveds: Solved[]} {
     const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
       if (!solved) {
         return []
@@ -25,10 +28,12 @@ export class TreeBuilder {
 
       return solved.dependencies.toArray()
         .map(loc => {
-          if (this.alreadyAddedPaths.has(loc.path)) {
-            return
+          if (!allowDuplicates) {
+            if (this.alreadyAddedPaths.has(loc.path)) {
+              return
+            }
+            this.alreadyAddedPaths.add(loc.path)
           }
-          this.alreadyAddedPaths.add(loc.path)
 
           const nodes = buildChildren(
             currentLevel,
@@ -44,11 +49,18 @@ export class TreeBuilder {
         .filter(treeNode => !!treeNode)
     }
 
+    if (this.solvedPool.length === 0) {
+      throw new Error('There is no dependency on the selected file')
+    }
+
     const root = this.solvedPool.find(node => node.level === 1)
     return {
-      path:  root.path,
-      label: root.name,
-      nodes: buildChildren(1, root),
+      treeNode: {
+        path:  root.path,
+        label: root.name,
+        nodes: buildChildren(1, root),
+      },
+      solveds: this.solvedPool
     }
   }
 

@@ -1,10 +1,11 @@
 import { TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
+import { Solved } from '../solver';
 
 export class TestingRenderer extends AbstractRenderer {
 
-  render(tree: TreeNode): string {
-    const ff = (_built: any) => {
+  render(tree: {treeNode: TreeNode, solveds: Solved[]}): Promise<string> {
+    const ff = (_built: TreeNode) => {
       const result = [] as string[]
       const f = (nodes: any, level: number) => {
         if (!nodes) {
@@ -22,7 +23,8 @@ export class TestingRenderer extends AbstractRenderer {
 
       return result.join('\n')
     }
-    return ff(tree)
+
+    return Promise.resolve(ff(tree.treeNode))
   }
 
 }

@@ -7,11 +7,13 @@
     "ava": "^0.18.2",
     "better-console": "^1.0.0",
     "find-root": "^1.0.0",
+    "inquirer": "^3.0.6",
     "packpath": "^0.1.0",
     "typescript": "^2.2.1",
     "yargs": "^7.0.1"
   },
   "devDependencies": {
+    "@types/inquirer": "^0.0.32",
     "@types/node": "^7.0.5",
     "@types/yargs": "^6.6.0",
     "tslint": "^4.5.1"

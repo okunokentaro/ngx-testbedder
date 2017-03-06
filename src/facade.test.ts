@@ -6,11 +6,11 @@ const packpath = require('packpath')
 const tsconfig = require('../../fixture/tsconfig.json')
 const renderer = new TestingRenderer()
 
-test(t => {
+test(async t => {
   const rootRelativePath = './fixture/using-injectable-and-import/01.ts'
   const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
 
-  const result = facade.run().split('\n').filter(v => !!v)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -19,11 +19,11 @@ test(t => {
   t.deepEqual(result, expected)
 })
 
-test(t => {
+test(async t => {
   const rootRelativePath = './fixture/using-injectable-deep-import/01.ts'
   const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
 
-  const result = facade.run().split('\n').filter(v => !!v)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -39,11 +39,11 @@ test(t => {
   t.deepEqual(result, expected)
 })
 
-test(t => {
+test(async t => {
   const rootRelativePath = './fixture/using-injectable-multi-edges/01.ts'
   const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
 
-  const result = facade.run().split('\n').filter(v => !!v)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
@@ -59,11 +59,11 @@ test(t => {
   t.deepEqual(result, expected)
 })
 
-test(t => {
+test(async t => {
   const rootRelativePath = './fixture/using-injectable-multi-parents/01.ts'
   const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
 
-  const result = facade.run().split('\n').filter(v => !!v)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     '1 AService',
     '2 BService',
