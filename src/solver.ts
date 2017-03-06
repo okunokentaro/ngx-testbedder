@@ -5,7 +5,7 @@ import { ImportDetector } from './import-detector'
 import { ConstructorParameterDetector } from './constructor-parameter-detector'
 import { InjectableDetector } from './injectable-detector'
 import { ComponentDetector } from './component-detector';
-import { TextRangeTuple } from './main';
+import { TextRangeTuple } from './abstract-detector';
 import { EventEmitter } from 'events';
 import { DependencyNode } from './tree-builder';
 

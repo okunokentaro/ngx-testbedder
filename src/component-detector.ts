@@ -2,8 +2,7 @@ import * as ts from 'typescript'
 import { EventEmitter } from 'events'
 
 import { isClassDeclaration, isCallExpression } from './type-guards'
-import { TextRangeTuple } from './main'
-import { AbstractDetector } from './abstract-detector'
+import { AbstractDetector, TextRangeTuple } from './abstract-detector'
 
 interface ClassPosition {
   position:      TextRangeTuple

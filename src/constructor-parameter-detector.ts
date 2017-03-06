@@ -1,10 +1,7 @@
 import * as ts from 'typescript'
-import {
-  isConstructor, isTypeReference,
-  isClassDeclaration
-} from './type-guards'
-import { TextRangeTuple } from './main'
-import { AbstractDetector } from './abstract-detector'
+
+import { isConstructor, isTypeReference, isClassDeclaration } from './type-guards'
+import { AbstractDetector, TextRangeTuple } from './abstract-detector'
 
 export class ConstructorParameterDetector extends AbstractDetector {
 

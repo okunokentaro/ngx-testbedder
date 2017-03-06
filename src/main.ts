@@ -4,8 +4,6 @@ import { ArchyRenderer } from './archy-renderer';
 
 const packpath = require('packpath')
 
-export type TextRangeTuple = [number, number]
-
 declare const require: any
 
 const main = (argv: any) => {
