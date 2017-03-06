@@ -5,41 +5,62 @@ import { Solved } from '../solver';
 
 const inquirer = require('inquirer')
 
+type TreeSolveds = {treeNode: TreeNode, solveds: Solved[]}
+type PromptTarget = {name: string, level: number}
+
 export class InquirerRenderer extends AbstractRenderer {
 
   private levelMap: Map<string, number>
 
-  render(tree: {treeNode: TreeNode, solveds: Solved[]}): string {
+  render(tree: TreeSolveds): string {
     this.question(tree)
-
     return ''
   }
 
-  private question(tree: {treeNode: TreeNode, solveds: Solved[]}) {
+  private question(tree: TreeSolveds) {
     this.levelMap = new Map<string, number>()
     tree.solveds.map(v => {
       this.levelMap.set(v.name, v.level)
     })
 
-    this.doHoge(tree, tree.solveds[0].name)
+    this.renderPrompt(tree, [tree.treeNode.label], 1)
   }
 
-  private doHoge(tree: {treeNode: TreeNode, solveds: Solved[]}, className: string) {
-    const f = (_tree: TreeNode, _className: string): TreeNode => {
-      console.log(_className === _tree.label)
-      const nodes = _className === _tree.label
-        ? _tree.nodes.map(node => f(node, _className)).filter(n => !!n)
-        : []
-
+  private renderPrompt(tree: TreeSolveds, chosens: string[], maxLevel: number) {
+    const decimateTree = (tree: TreeNode, _maxLevel: number): TreeNode => {
+      if (_maxLevel < this.levelMap.get(tree.label)) {
+        return {
+          path: tree.path,
+          label: tree.label,
+          nodes: [],
+        }
+      }
+      if (!chosens.includes(tree.label)) {
+        return {
+          path: tree.path,
+          label: tree.label,
+          nodes: [],
+        }
+      }
       return {
-        path:  _tree.path,
-        label: _tree.label,
-        nodes
+        path: tree.path,
+        label: tree.label,
+        nodes: tree.nodes.map(node => decimateTree(node, _maxLevel)),
       }
     }
-    const hoge = f(tree.treeNode, className)
+
+    const decimatedTree = decimateTree(tree.treeNode, maxLevel)
+
     const archy = new ArchyRenderer()
-    const treeLines = ['Done'].concat(archy.render({treeNode: hoge, solveds: tree.solveds}).split('\n').filter(l => !!l))
+    const treeLines = ['Done'].concat(archy.render({treeNode: decimatedTree, solveds: tree.solveds}).split('\n').filter(l => !!l))
+
+    const defaultChosens = treeLines.map((item, idx) => {
+      if (chosens.includes(item.split(' ').slice(-1)[0])) {
+        return idx
+      }
+    }).map(idx => {
+      return treeLines[idx]
+    })
 
     const questions = [
       {
@@ -47,15 +68,19 @@ export class InquirerRenderer extends AbstractRenderer {
         name: 'tree',
         message: 'Is this for delivery?',
         choices: treeLines,
+        default: defaultChosens,
         pageSize: 31,
       },
     ]
-    inquirer.prompt(questions).then((answers: {tree: string[]}) => {
-      answers.tree.map(a => {
-        const _className = a.split(' ')[1]
-        const level = this.levelMap.get(_className)
-        this.doHoge(tree, _className)
+    inquirer.prompt(questions).then((answer: {tree: string[]}) => {
+      const chosens = answer.tree.map(item => {
+        return item.split(' ').slice(-1)[0]
       })
+      if (answer.tree.includes('Done')) {
+        console.info(chosens);
+        return
+      }
+      this.renderPrompt(tree, chosens, maxLevel + 1)
     })
   }
 

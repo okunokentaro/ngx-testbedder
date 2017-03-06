@@ -8,6 +8,8 @@ export interface TreeNode {
   nodes: TreeNode[]
 }
 
+const allowDuplicates = true
+
 export class TreeBuilder {
 
   solvedPool = [] as Solved[]
@@ -25,10 +27,12 @@ export class TreeBuilder {
 
       return solved.dependencies.toArray()
         .map(loc => {
-          if (this.alreadyAddedPaths.has(loc.path)) {
-            return
+          if (!allowDuplicates) {
+            if (this.alreadyAddedPaths.has(loc.path)) {
+              return
+            }
+            this.alreadyAddedPaths.add(loc.path)
           }
-          this.alreadyAddedPaths.add(loc.path)
 
           const nodes = buildChildren(
             currentLevel,
