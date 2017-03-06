@@ -82,15 +82,24 @@ export class InquirerRenderer extends AbstractRenderer {
     ]
 
     this.getInquirer().prompt(questions).then((answer: {tree: string[]}) => {
-      const chosens = answer.tree.map(item => {
-        return item.split(' ').slice(-1)[0]
-      })
+      const chosens =Array.from(
+        new Set(
+          answer.tree.map(item => {
+            return item.split(' ').slice(-1)[0]
+          })
+        )
+      )
+
       if (answer.tree.includes('Done')) {
-        const unchosens = treeLines.map(item => {
-          return item.split(' ').slice(-1)[0]
-        }).filter(item => {
-          return !chosens.includes(item)
-        })
+        const unchosens = Array.from(
+          new Set(
+            treeLines.map(item => {
+              return item.split(' ').slice(-1)[0]
+            }).filter(item => {
+              return !chosens.includes(item)
+            })
+          )
+        )
 
         const mockProviders = unchosens.map(item => {
           return `{provide: ${item}, useClass: ${item}Mock},`

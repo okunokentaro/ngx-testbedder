@@ -1,5 +1,5 @@
 import { Solved } from './solver';
-import { Options } from './facade';
+import { OptionsNonNull } from './facade';
 
 const console = require('better-console')
 
@@ -9,8 +9,6 @@ export interface TreeNode {
   nodes: TreeNode[]
 }
 
-const allowDuplicates = true
-
 export class TreeBuilder {
 
   solvedPool = [] as Solved[]
@@ -18,10 +16,8 @@ export class TreeBuilder {
   private alreadyAddedPaths = new Set<string>()
   private allowDuplicates   = true
 
-  constructor(options: Options) {
-    this.allowDuplicates = !!options && typeof options.allowDuplicates === 'boolean'
-        ? options.allowDuplicates
-        : this.allowDuplicates
+  constructor(options: OptionsNonNull) {
+    this.allowDuplicates = options.allowDuplicates
   }
 
   build(): {treeNode: TreeNode, solveds: Solved[]} {

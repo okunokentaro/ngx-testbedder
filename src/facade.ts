@@ -10,9 +10,19 @@ const findRoot = require('find-root')
 const console  = require('better-console')
 
 export interface Options {
+  allowDuplicates?: boolean
+  renderer?:        AbstractRenderer
+}
+
+export interface OptionsNonNull {
   allowDuplicates: boolean
   renderer:        AbstractRenderer
 }
+
+const defaults = {
+  allowDuplicates: true,
+  renderer: new InquirerRenderer(),
+} as Options
 
 export class Facade {
 
@@ -29,14 +39,14 @@ export class Facade {
     filePath: string,
     private tsconfig: any,
     private projectRoot: string,
-    private options?: Options
+    _options?: Options
   ) {
+    const options = Object.assign({}, defaults, _options) as OptionsNonNull
+
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program  = ts.createProgram([this.filePath], this.tsconfig)
     this.solver   = new Solver(this.filePath, this.program, projectRoot, 1)
-
-    this.renderer = !!options && !!options.renderer ? options.renderer : new InquirerRenderer()
-
+    this.renderer = options.renderer
     this.builder  = new TreeBuilder(options)
   }
 

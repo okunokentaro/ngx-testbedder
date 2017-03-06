@@ -1,10 +1,24 @@
 import test from 'ava'
+import * as sinon from 'sinon'
+
 import { Facade } from './facade';
 import { TestingRenderer } from './renderers/testing-renderer';
+import { InquirerRenderer } from './renderers/inquirer-renderer';
 
 const packpath = require('packpath')
 const tsconfig = require('../../fixture/tsconfig.json')
 const testingRenderer = new TestingRenderer()
+
+const makeInquirerStub = (renderer: InquirerRenderer, answersFixture: string[]) => {
+  const inquirerStub = sinon.stub(renderer, 'getInquirer')
+  answersFixture.forEach((fixture, idx) => {
+    inquirerStub.onCall(idx).returns({
+      prompt: () => Promise.resolve({
+        tree: fixture.split(',')
+      })
+    })
+  })
+}
 
 test(async t => {
   const facade = new Facade(
@@ -131,6 +145,66 @@ test(async t => {
     '2 CService',
     '3 GService',
     '3 HService',
+  ]
+
+  t.deepEqual(result, expected)
+})
+
+test(async t => {
+  const renderer = new InquirerRenderer()
+  const facade   = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      renderer,
+    }
+  )
+
+  makeInquirerStub(renderer, [
+    'Done, AService',
+  ])
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
+  const expected = [
+    'Done,',
+    'AService,',
+    '{provide: BService, useClass: BServiceMock},',
+    '{provide: CService, useClass: CServiceMock},',
+    '{provide: DService, useClass: DServiceMock},',
+  ]
+
+  t.deepEqual(result, expected)
+})
+
+test(async t => {
+  const renderer = new InquirerRenderer()
+  const facade   = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      renderer,
+    }
+  )
+
+  makeInquirerStub(renderer, [
+    'AService, └── DService',
+    'AService, ├── BService, └─┬ DService',
+    'AService, ├─┬ BService, │ ├─┬ DService, └─┬ DService,   └── IService',
+    'Done, AService, ├─┬ BService, │ ├─┬ DService, │ │ └── IService, └─┬ DService,   └── IService',
+  ])
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v)
+  const expected = [
+    'Done,',
+    'AService,',
+    'BService,',
+    'DService,',
+    'IService,',
+    '{provide: EService, useClass: EServiceMock},',
+    '{provide: FService, useClass: FServiceMock},',
+    '{provide: CService, useClass: CServiceMock},',
   ]
 
   t.deepEqual(result, expected)
