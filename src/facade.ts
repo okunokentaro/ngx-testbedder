@@ -65,7 +65,6 @@ export class Facade {
     dispose()
 
     const built = builder.build()
-
     return this.renderer.render(built)
   }
 

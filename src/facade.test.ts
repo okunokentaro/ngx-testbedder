@@ -38,3 +38,23 @@ test(t => {
 
   t.deepEqual(result, expected)
 })
+
+test(t => {
+  const rootRelativePath = './fixture/using-injectable-multi-edges/01.ts'
+  const facade           = new Facade(rootRelativePath, tsconfig, packpath.self(), renderer)
+
+  const result = facade.run().split('\n').filter(v => !!v)
+  const expected = [
+    '1 AService',
+    '2 BService',
+    '3 EService',
+    '3 FService',
+    '2 CService',
+    '3 GService',
+    '3 HService',
+    '2 DService',
+    '3 IService',
+  ]
+
+  t.deepEqual(result, expected)
+})

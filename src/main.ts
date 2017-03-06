@@ -19,7 +19,7 @@ const main = (argv: any) => {
   const facade   = new Facade(arg, tsconfig, packpath.self(), renderer)
 
   const result = facade.run()
-  console.log(result)
+  console.info(result)
 }
 
 main(yargs.argv)
