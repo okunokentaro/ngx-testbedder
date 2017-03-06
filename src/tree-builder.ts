@@ -14,54 +14,40 @@ export class TreeBuilder {
   private alreadyAddedPaths = new Set<string>()
 
   build(): TreeNode {
-    const root = this.solvedPool.find(node => node.level === 1)
-
-    const buildTree = (solved: Solved, level: number): TreeNode[] => {
-      const nextLevel = level + 1
-
-      const nexts = this.solvedPool.filter(node => node.level === nextLevel)
-      if (nextLevel === 1) {
-        const next = nexts[0]
-        const path = next.path
-        const name = next.name
-
-        const childrenNodes = !!next
-          ? buildTree(next, nextLevel)
-          : []
-
-        this.alreadyAddedPaths.add(path)
-
-        return [{
-          path:  path,
-          label: name,
-          nodes: childrenNodes,
-        }]
+    const buildChildren = (prevLevel: number, solved: Solved): TreeNode[] => {
+      if (!solved) {
+        return []
       }
 
-      return solved.dependencies.toArray().map(classLocation => {
-        const next = nexts.find(v => v.path === classLocation.path)
-        const path = classLocation.path
-        const name = classLocation.name
+      const currentLevel = prevLevel + 1
+      const currentLevelDependencies = this.solvedPool
+        .filter(solved => solved.level === currentLevel)
 
-        if (this.alreadyAddedPaths.has(path)) {
+      return solved.dependencies.toArray().map(loc => {
+        if (this.alreadyAddedPaths.has(loc.path)) {
           return
         }
+        this.alreadyAddedPaths.add(loc.path)
 
-        const childrenNodes = !!next
-          ? buildTree(next, nextLevel)
-          : []
-
-        this.alreadyAddedPaths.add(path)
+        const nodes = buildChildren(
+          currentLevel,
+          currentLevelDependencies.find(solved => solved.path === loc.path),
+        )
 
         return {
-          path:  path,
-          label: name,
-          nodes: childrenNodes,
+          path:  loc.path,
+          label: loc.name,
+          nodes,
         }
       }).filter(v => !!v)
     }
 
-    return buildTree(root, 0)[0] as TreeNode
+    const root = this.solvedPool.find(node => node.level === 1)
+    return {
+      path:  root.path,
+      label: root.name,
+      nodes: buildChildren(1, root),
+    }
   }
 
 }
