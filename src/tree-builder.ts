@@ -38,7 +38,7 @@ export class TreeBuilder {
 
         return {
           // path: pathAndName.path,
-          label: pathAndName.name,
+          label: name,
           nodes: childrenNodes,
         }
       })

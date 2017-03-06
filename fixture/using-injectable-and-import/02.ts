@@ -2,6 +2,6 @@
 import { Injectable } from '../mock-injectable';
 
 @Injectable()
-export class AService {
+export class BService {
 
 }

@@ -54,8 +54,7 @@ export class Solver {
     }, [] as TextRangeTuple[])
 
     const params       = new ConstructorParameterDetector(thisSource, classPositions).detect()
-    console.log('params', params);
-    const pathAndNames = new ImportDetector(thisSource, params).detect()
+    const pathAndNames = new ImportDetector(thisSource, params.injectNames).detect()
 
     const pathsExcludeNodeModules = Array.from(pathAndNames.keys()).filter(_path => {
       return /^\./.test(_path)
@@ -75,6 +74,7 @@ export class Solver {
       this.outputEmitter.emit(outputEventName, {
         dependenciesPathsAndNames,
         path:  this.filePath,
+        name:  params.includingClassName,
         level: this.level
       } as DependencyNode)
     }

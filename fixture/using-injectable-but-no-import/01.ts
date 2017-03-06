@@ -1,15 +1,15 @@
 /* tslint:disable:max-classes-per-file */
 import { Injectable } from '../mock-injectable';
 
-class AService {
+class BService {
 
 }
 
 @Injectable()
-class BService {
+class AService {
 
   constructor(
-    private aService: AService,
+    private b: BService,
   ) {
     //
   }

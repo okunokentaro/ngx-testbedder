@@ -1,11 +1,16 @@
 import * as ts from 'typescript'
-import { isConstructor, isTypeReference } from './type-guards'
+import {
+  isConstructor, isTypeReference,
+  isClassDeclaration
+} from './type-guards'
 import { TextRangeTuple } from './main'
 import { AbstractDetector } from './abstract-detector'
 
 export class ConstructorParameterDetector extends AbstractDetector {
 
   private injectClassNames = [] as string[]
+  private includingClassName: string
+  private classDeclarations = [] as Array<{name: string, position: TextRangeTuple}>
 
   constructor(
     private sourceFile:     ts.SourceFile,
@@ -14,16 +19,36 @@ export class ConstructorParameterDetector extends AbstractDetector {
     super()
   }
 
-  detect(): string[] {
+  detect(): {includingClassName: string, injectNames: string[]} {
     if (this.detectedRanges.length < 1) {
-      return []
+      return {
+        includingClassName: this.includingClassName,
+        injectNames: []
+      }
     }
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
-    return this.injectClassNames
+    return {
+      includingClassName: this.includingClassName,
+      injectNames: this.injectClassNames
+    }
   }
 
   private visit(node: ts.Node) {
+    if (isClassDeclaration(node)) {
+      this.classDeclarations.push({
+        name: node.name.text,
+        position: [node.pos, node.end]
+      })
+      ts.forEachChild(node, _node => this.visit(_node))
+      return
+    }
+
     if (isConstructor(node)) {
+      const targetClassDeclaration = this.classDeclarations.find(classDeclaration => {
+        return this.isInRange(classDeclaration.position, [node.pos, node.end])
+      })
+
+      this.includingClassName = targetClassDeclaration.name
       const inInRange = this.detectedRanges.some(range => {
         return this.isInRange(range, [node.pos, node.end])
       })
@@ -34,6 +59,7 @@ export class ConstructorParameterDetector extends AbstractDetector {
       Array.from(node.parameters).forEach(paramNode => {
         ts.forEachChild(paramNode, _node => this.visitParameters(_node))
       })
+      return
     }
     ts.forEachChild(node, _node => this.visit(_node))
   }
