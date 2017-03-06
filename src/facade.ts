@@ -4,7 +4,6 @@ import { Solver } from './solver';
 import { TreeBuilder } from './tree-builder';
 
 const findRoot = require('find-root')
-const console = require('better-console')
 
 export class Facade {
 
@@ -20,7 +19,7 @@ export class Facade {
     private projectRoot: string,
   ) {
     this.program = ts.createProgram([this.filePath], this.tsconfig)
-    this.solver = new Solver(filePath, this.program, projectRoot, 1)
+    this.solver  = new Solver(filePath, this.program, projectRoot, 1)
   }
 
   run() {
@@ -28,18 +27,18 @@ export class Facade {
 
     const dispose = this.solver.addListenerOutput(obj => {
       builder.rawNodes.push({
-        path:                      obj.filePath,
-        level:                     obj.currentLevel,
-        dependenciesPathsAndNames: obj.absoluteFilePathsAndNames,
+        path:                      obj.path,
+        level:                     obj.level,
+        dependenciesPathsAndNames: obj.dependenciesPathsAndNames,
       })
 
-      obj.absoluteFilePathsAndNames
-        .map(filePathAndName => {
-          const nextFilePath = filePathAndName.path
+      obj.dependenciesPathsAndNames
+        .map(pathAndName => {
+          const nextFilePath = pathAndName.path
           const rootPath     = this.getRootPath(nextFilePath)
           this.rootPaths.add(rootPath)
 
-          const nextLevel = obj.currentLevel + 1
+          const nextLevel = obj.level + 1
 
           return {
             nextFilePath,

@@ -7,12 +7,7 @@ import { InjectableDetector } from './injectable-detector'
 import { ComponentDetector } from './component-detector';
 import { TextRangeTuple } from './main';
 import { EventEmitter } from 'events';
-
-type Output = {
-  absoluteFilePathsAndNames: Array<{path: string, name: string}>,
-  filePath: string,
-  currentLevel: number,
-}
+import { DependencyNode } from './tree-builder';
 
 const typeScriptExtension = 'ts'
 const extensionSeparator  = '.'
@@ -64,7 +59,7 @@ export class Solver {
       return /^\./.test(_path)
     })
 
-    const absoluteFilePathsAndNames = pathsExcludeNodeModules.map(_path => {
+    const dependenciesPathsAndNames = pathsExcludeNodeModules.map(_path => {
       const fileDir = getFileDir(this.filePath)
       const absolutePath = [pathModule.resolve(fileDir, _path), typeScriptExtension]
         .join(extensionSeparator)
@@ -74,19 +69,19 @@ export class Solver {
       }
     })
 
-    if (0 < absoluteFilePathsAndNames.length) {
+    if (0 < dependenciesPathsAndNames.length) {
       this.outputEmitter.emit(outputEventName, {
-        absoluteFilePathsAndNames,
-        filePath: this.filePath,
-        currentLevel: this.level
-      })
+        dependenciesPathsAndNames,
+        path:  this.filePath,
+        level: this.level
+      } as DependencyNode)
     }
   }
 
   /**
    * @returns disposeFunction
    */
-  addListenerOutput(callback: (v: Output) => void): () => void {
+  addListenerOutput(callback: (v: DependencyNode) => void): () => void {
     const disposer = this.outputEmitter.on(outputEventName, callback)
     return () => disposer.removeListener(outputEventName, callback)
   }
