@@ -46,17 +46,17 @@ export class InquirerRenderer extends AbstractRenderer {
 
     const decimatedTree = decimateTree(treeLevelMap.treeNode, _maxLevel)
 
-    const archy = new ArchyRenderer()
-    const archyResult = await archy.render({treeNode: decimatedTree, levelMap: treeLevelMap.levelMap})
-    const treeLines = [doneText].concat(archyResult.split('\n').filter(l => !!l))
-
-    const defaultChosens = treeLines.map((item, idx) => {
-      if (chosens.includes(item.split(' ').slice(-1)[0])) {
-        return idx
-      }
-    }).map(idx => {
-      return treeLines[idx]
+    const archy       = new ArchyRenderer()
+    const archyResult = await archy.render({
+      treeNode: decimatedTree,
+      levelMap: treeLevelMap.levelMap
     })
+    const treeLines   = [doneText].concat(archyResult.split('\n').filter(l => !!l))
+
+    const defaultChosens = treeLines
+      .map((item, idx) => chosens.includes(this.getClassName(item)) ? idx : null)
+      .filter(v => !!v)
+      .map(idx => treeLines[idx])
 
     const questions = [
       {
@@ -111,6 +111,10 @@ export class InquirerRenderer extends AbstractRenderer {
 
   private getLevel(tree: TreeNode) {
     return this.levelMap.get(tree.label)
+  }
+
+  private getClassName(questionsText: string) {
+    return questionsText.split(' ').slice(-1)[0]
   }
 
 }
