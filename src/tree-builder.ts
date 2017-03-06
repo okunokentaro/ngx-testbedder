@@ -14,10 +14,10 @@ export class TreeBuilder {
   private alreadyAddedPaths = new Set<string>()
 
   build(): TreeNode {
-    const rootNode = this.solvedPool.find(node => node.level === 1)
+    const root = this.solvedPool.find(node => node.level === 1)
 
-    const buildTree = (solved: Solved, currentLevel: number): TreeNode[] => {
-      const nextLevel = currentLevel + 1
+    const buildTree = (solved: Solved, level: number): TreeNode[] => {
+      const nextLevel = level + 1
 
       return solved.dependencies.toArray().map(classLocation => {
         const nexts = this.solvedPool.filter(node => node.level === nextLevel)
@@ -26,42 +26,33 @@ export class TreeBuilder {
           ? nexts[0]
           : nexts.find(v => v.path === classLocation.path)
 
-        return this.createTreeNode(next, classLocation, nextLevel, buildTree)
+        const path = nextLevel === 1
+          ? next.path
+          : classLocation.path
+
+        if (this.alreadyAddedPaths.has(path)) {
+          return
+        }
+
+        const name = nextLevel === 1
+          ? next.name
+          : classLocation.name
+
+        const childrenNodes = !!next
+          ? buildTree(next, nextLevel)
+          : []
+
+        this.alreadyAddedPaths.add(path)
+
+        return {
+          path:  path,
+          label: name,
+          nodes: childrenNodes,
+        }
       }).filter(v => !!v)
     }
 
-    return buildTree(rootNode, 0)[0] as TreeNode
-  }
-
-  private createTreeNode(
-    solved:      Solved,
-    pathAndName: {path: string, name: string},
-    level:       number,
-    circleFunction: (node: Solved, currentLevel: number) => TreeNode[]
-  ): TreeNode {
-    const path = level === 1
-      ? solved.path
-      : pathAndName.path
-
-    if (this.alreadyAddedPaths.has(path)) {
-      return
-    }
-
-    const name = level === 1
-      ? solved.name
-      : pathAndName.name
-
-    const childrenNodes = !!solved
-      ? circleFunction(solved, level)
-      : []
-
-    this.alreadyAddedPaths.add(path)
-
-    return {
-      path:  path,
-      label: name,
-      nodes: childrenNodes,
-    }
+    return buildTree(root, 0)[0] as TreeNode
   }
 
 }
