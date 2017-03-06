@@ -82,18 +82,20 @@ export class InquirerRenderer extends AbstractRenderer {
     ]
 
     this.getInquirer().prompt(questions).then((answer: {tree: string[]}) => {
-      const chosens =Array.from(
-        new Set(
+      const chosens = Array.from((() => {
+        return new Set(
           answer.tree.map(item => {
             return item.split(' ').slice(-1)[0]
           })
         )
-      )
+      })())
 
       if (answer.tree.includes('Done')) {
+        const treeLinesExcludeDone = treeLines.filter(item => item !== 'Done')
+
         const unchosens = Array.from(
           new Set(
-            treeLines.map(item => {
+            treeLinesExcludeDone.map(item => {
               return item.split(' ').slice(-1)[0]
             }).filter(item => {
               return !chosens.includes(item)
@@ -104,7 +106,7 @@ export class InquirerRenderer extends AbstractRenderer {
         const mockProviders = unchosens.map(item => {
           return `{provide: ${item}, useClass: ${item}Mock},`
         })
-        const providers = chosens.map(item => {
+        const providers = chosens.filter(item => item !== 'Done').map(item => {
           return `${item},`
         })
 

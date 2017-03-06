@@ -167,7 +167,6 @@ test(async t => {
 
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
-    'Done,',
     'AService,',
     '{provide: BService, useClass: BServiceMock},',
     '{provide: CService, useClass: CServiceMock},',
@@ -197,7 +196,6 @@ test(async t => {
 
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
-    'Done,',
     'AService,',
     'BService,',
     'DService,',
