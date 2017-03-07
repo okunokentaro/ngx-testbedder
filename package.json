@@ -2,6 +2,7 @@
   "name": "ng-testbedder",
   "version": "0.1.0",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
+  "bin": "index.js",
   "dependencies": {
     "archy": "^1.0.0",
     "better-console": "^1.0.0",
