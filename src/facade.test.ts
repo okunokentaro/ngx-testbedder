@@ -1,13 +1,22 @@
-import test from 'ava'
+import * as pathModule from 'path'
 import * as sinon from 'sinon'
+import test from 'ava'
 
 import { Facade } from './facade';
 import { TestingRenderer } from './renderers/testing-renderer';
 import { InquirerRenderer } from './renderers/inquirer-renderer';
 
-const packpath = require('packpath')
-const tsconfig = require('../../fixture/tsconfig.json')
+const tsconfig        = require('../../fixture/tsconfig.json')
+const findRoot        = require('find-root')
 const testingRenderer = new TestingRenderer()
+
+const makeRootRelativepath = (path: string): string => {
+  if (pathModule.isAbsolute(path)) {
+    return findRoot(path)
+  }
+  const absPath = pathModule.resolve(__dirname, path)
+  return findRoot(absPath)
+}
 
 const makeInquirerStub = (renderer: InquirerRenderer, answersFixture: string[]) => {
   const inquirerStub = sinon.stub(renderer, 'getInquirer')
@@ -21,13 +30,14 @@ const makeInquirerStub = (renderer: InquirerRenderer, answersFixture: string[]) 
 }
 
 test(async t => {
+  const path   = './fixture/using-injectable-and-import/01.ts'
   const facade = new Facade(
-    './fixture/using-injectable-and-import/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       allowDuplicates: true,
-      renderer: testingRenderer,
+      renderer:        testingRenderer,
     }
   )
 
@@ -41,13 +51,14 @@ test(async t => {
 })
 
 test(async t => {
+  const path   = './fixture/using-injectable-deep-import/01.ts'
   const facade = new Facade(
-    './fixture/using-injectable-deep-import/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       allowDuplicates: true,
-      renderer: testingRenderer,
+      renderer:        testingRenderer,
     }
   )
 
@@ -68,13 +79,14 @@ test(async t => {
 })
 
 test(async t => {
+  const path   = './fixture/using-injectable-multi-edges/01.ts'
   const facade = new Facade(
-    './fixture/using-injectable-multi-edges/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       allowDuplicates: true,
-      renderer: testingRenderer,
+      renderer:        testingRenderer,
     }
   )
 
@@ -95,13 +107,14 @@ test(async t => {
 })
 
 test(async t => {
+  const path   = './fixture/using-injectable-multi-parents/01.ts'
   const facade = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       allowDuplicates: true,
-      renderer: testingRenderer,
+      renderer:        testingRenderer,
     }
   )
 
@@ -124,13 +137,14 @@ test(async t => {
 })
 
 test(async t => {
+  const path   = './fixture/using-injectable-multi-parents/01.ts'
   const facade = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       allowDuplicates: false,
-      renderer: testingRenderer,
+      renderer:        testingRenderer,
     }
   )
 
@@ -151,11 +165,12 @@ test(async t => {
 })
 
 test(async t => {
+  const path     = './fixture/using-injectable-multi-parents/01.ts'
   const renderer = new InquirerRenderer()
   const facade   = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       renderer,
     }
@@ -181,11 +196,12 @@ test(async t => {
 })
 
 test(async t => {
+  const path     = './fixture/using-injectable-multi-parents/01.ts'
   const renderer = new InquirerRenderer()
   const facade   = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       renderer,
     }
@@ -220,11 +236,12 @@ test(async t => {
 })
 
 test(async t => {
+  const path     = './fixture/using-injectable-multi-parents/01.ts'
   const renderer = new InquirerRenderer()
   const facade   = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       renderer,
     }
@@ -254,14 +271,15 @@ test(async t => {
 })
 
 test(async t => {
+  const path     = './fixture/using-injectable-multi-parents/01.ts'
   const renderer = new InquirerRenderer()
   const facade   = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       renderer,
-      mockPathPattern: '(.*)\.ts',
+      mockPathPattern:     '(.*)\.ts',
       mockPathReplacement: '$1.mock.ts',
     }
   )
@@ -280,14 +298,15 @@ test(async t => {
 })
 
 test(async t => {
+  const path     = './fixture/using-injectable-multi-parents/01.ts'
   const renderer = new InquirerRenderer()
   const facade   = new Facade(
-    './fixture/using-injectable-multi-parents/01.ts',
+    path,
     tsconfig,
-    packpath.self(),
+    makeRootRelativepath(path),
     {
       renderer,
-      mockPathPattern: '(.*)\.ts',
+      mockPathPattern:     '(.*)\.ts',
       mockPathReplacement: '$1-mock.ts',
     }
   )

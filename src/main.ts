@@ -1,10 +1,14 @@
+import * as pathModule from 'path'
 import * as yargs from 'yargs'
 
 import { Facade } from './facade';
 import { setVerboseLevel } from './logger';
 
 const console  = require('better-console')
-const packpath = require('packpath')
+const findRoot = require('find-root')
+
+const tsconfigFileName = 'tsconfig.json'
+const angularCliRoot   = 'src'
 
 const main = async (argv: any) => {
   const arg = argv._[0]
@@ -12,8 +16,28 @@ const main = async (argv: any) => {
     console.error('[ERROR] A file path is required!')
     return
   }
-  const tsconfig = require('../../tsconfig.json')
-  const facade = new Facade(arg, tsconfig, packpath.self(), {
+
+  const rootRelativepath = (() => {
+    if (pathModule.isAbsolute(arg)) {
+      return findRoot(arg)
+    }
+    const absPath = pathModule.resolve(__dirname, arg)
+    return findRoot(absPath)
+  })()
+
+  const tsconfig = (() => {
+    try {
+      return require([rootRelativepath, tsconfigFileName].join(pathModule.sep))
+    } catch (e) {
+      try {
+        return require([rootRelativepath, angularCliRoot, tsconfigFileName].join(pathModule.sep))
+      } catch (e) {
+        return require(argv.tsconfig)
+      }
+    }
+  })()
+
+  const facade = new Facade(arg, tsconfig, rootRelativepath, {
     mockPathPattern:     argv.pattern,
     mockPathReplacement: argv.replacement,
   })
@@ -30,6 +54,10 @@ const argv = yargs
   .option('replacement', {
     alias: 'rp',
     describe: '(Optional) mockPathReplacement'
+  })
+  .option('tsconfig', {
+    alias: 'c',
+    describe: '(Optional) tsconfig.json path, default ./tsconfig.json or ./src/tsconfig.json'
   })
   .option('verbose', {
     alias: 'v',
