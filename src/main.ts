@@ -17,23 +17,23 @@ const main = async (argv: any) => {
     return
   }
 
-  const rootRelativepath = pathModule.isAbsolute(target)
+  const rootRelativePath = pathModule.isAbsolute(target)
     ? findRoot(target)
     : findRoot(argv['$0'])
 
   const tsconfig = (() => {
     try {
-      return require([rootRelativepath, tsconfigFileName].join(pathModule.sep))
+      return require([rootRelativePath, tsconfigFileName].join(pathModule.sep))
     } catch (e) {
       try {
-        return require([rootRelativepath, angularCliRoot, tsconfigFileName].join(pathModule.sep))
+        return require([rootRelativePath, angularCliRoot, tsconfigFileName].join(pathModule.sep))
       } catch (e) {
         return require(argv.tsconfig)
       }
     }
   })()
 
-  const facade = new Facade(target, tsconfig, rootRelativepath, {
+  const facade = new Facade(target, tsconfig, rootRelativePath, {
     mockPathPattern:     argv.pattern,
     mockPathReplacement: argv.replacement,
   })
