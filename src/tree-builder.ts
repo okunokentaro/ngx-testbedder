@@ -16,8 +16,8 @@ export interface TreeWithMap {
 
 export class TreeBuilder {
 
-  solvedPool = [] as Solved[]
 
+  private solvedPool        = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
   private allowDuplicates   = true
 
@@ -65,9 +65,12 @@ export class TreeBuilder {
 
     const levelMap = new Map<string, number>()
     const pathMap  = new Map<string, string>()
-    this.solvedPool.forEach(v => {
-      levelMap.set(v.name, v.level)
-      pathMap.set(v.name, v.path)
+    this.solvedPool.forEach(solved => {
+      solved.dependencies.toArray().forEach(v => {
+        pathMap.set(v.name, v.path)
+      })
+      levelMap.set(solved.name, solved.level)
+      pathMap.set(solved.name, solved.path)
     })
 
     return {
@@ -78,6 +81,10 @@ export class TreeBuilder {
       levelMap,
       pathMap
     }
+  }
+
+  save(solved: Solved) {
+    this.solvedPool.push(solved)
   }
 
 }

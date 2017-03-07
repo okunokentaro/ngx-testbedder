@@ -9,6 +9,8 @@ import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
 import { ClassLocations } from './class-locations';
 
+const console = require('better-console')
+
 export interface Solved {
   path:  string,
   name:  string,
@@ -16,9 +18,7 @@ export interface Solved {
   dependencies: ClassLocations,
 }
 
-const console = require('better-console')
-
-const outputEventName = 'output'
+const solvedEventName = 'solved'
 
 const getFileDir = (pathWithFileName: string): string => {
   return pathWithFileName.split(pathModule.basename(pathWithFileName))[0]
@@ -62,7 +62,7 @@ export class Solver {
     const classLocations = new ImportDetector(thisSource, classInfo.injectNames, fileDir).detect()
 
     if (classLocations.exists()) {
-      this.emitter.emit(outputEventName, {
+      this.emitter.emit(solvedEventName, {
         dependencies: classLocations,
         path:         this.filePath,
         name:         classInfo.includingClassName,
@@ -75,8 +75,8 @@ export class Solver {
    * @returns disposeFunction
    */
   addListenerOutput(callback: (v: Solved) => void): () => void {
-    const disposer = this.emitter.on(outputEventName, callback)
-    return () => disposer.removeListener(outputEventName, callback)
+    const disposer = this.emitter.on(solvedEventName, callback)
+    return () => disposer.removeListener(solvedEventName, callback)
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {

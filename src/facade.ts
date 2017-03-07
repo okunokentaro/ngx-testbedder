@@ -51,8 +51,8 @@ export class Facade {
   }
 
   run(): Promise<string> {
-    const dispose = this.solver.addListenerOutput(obj => {
-      this.dealWithSolved(obj)
+    const dispose = this.solver.addListenerOutput(solved => {
+      this.dealWithSolved(solved)
     })
     this.solver.run()
     dispose()
@@ -67,7 +67,7 @@ export class Facade {
   }
 
   private dealWithSolved(solved: Solved) {
-    this.builder.solvedPool.push(solved)
+    this.builder.save(solved)
 
     solved.dependencies.toArray()
       .map(classLocation => {

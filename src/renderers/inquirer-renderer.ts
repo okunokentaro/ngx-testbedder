@@ -1,3 +1,4 @@
+import * as pathModule from 'path'
 import * as inquirer from 'inquirer'
 import { EventEmitter } from 'events';
 
@@ -24,7 +25,7 @@ export class InquirerRenderer extends AbstractRenderer {
 
   render(treeWithMap: TreeWithMap): Promise<string> {
     this.treeWithMap = treeWithMap
-    this.renderPrompt([treeWithMap.treeNode.label], 1)
+    this.renderPrompt([this.treeWithMap.treeNode.label], 1)
 
     return new Promise(resolve => {
       this.emitter.on(resolveEventName, res => resolve(res))
@@ -103,6 +104,7 @@ export class InquirerRenderer extends AbstractRenderer {
 
       const result = imports
         .concat(...mockImports)
+        .concat('') // a blank line
         .concat(...providers)
         .concat(...mockProviders)
         .join('\n')
@@ -134,19 +136,34 @@ export class InquirerRenderer extends AbstractRenderer {
   }
 
   private formatImports(classNames: string[]): string[] {
+    const baseLabel   = this.treeWithMap.treeNode.label
+    const basePath    = this.treeWithMap.pathMap.get(baseLabel)
+    const baseDirPath = pathModule.dirname(basePath)
     return classNames
       .map(cls => {
-        const path = this.treeWithMap.pathMap.get(cls)
+        const absPath = this.treeWithMap.pathMap.get(cls)
+        const path    = (() => {
+          const tmp = pathModule.relative(baseDirPath, absPath)
+          return  /^\./.test(tmp) ? tmp : `./${tmp}`
+        })()
         return `import { ${cls} } from '${path}';`
       })
   }
 
   private formatMockImports(classNames: string[]): string[] {
+    const baseLabel   = this.treeWithMap.treeNode.label
+    const basePath    = this.treeWithMap.pathMap.get(baseLabel)
+    const baseDirPath = pathModule.dirname(basePath)
     return classNames
       .map(cls => {
-        const path = this.treeWithMap.pathMap.get(cls)
+        const absPath = this.treeWithMap.pathMap.get(cls)
+        const path    = (() => {
+          const tmp = pathModule.relative(baseDirPath, absPath)
+          return  /^\./.test(tmp) ? tmp : `./${tmp}`
+        })()
+
         return `import { ${cls}Mock } from '${path}';`
-      })
+      }).filter(v => !!v)
   }
 
 }
