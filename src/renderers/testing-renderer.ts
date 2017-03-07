@@ -1,5 +1,5 @@
-import { TreeWithMap, TreeNode } from '../tree-builder';
-import { AbstractRenderer } from './abstract-renderer';
+import { TreeWithMap, TreeNode } from '../tree-builder'
+import { AbstractRenderer } from './abstract-renderer'
 
 export class TestingRenderer extends AbstractRenderer {
 
@@ -10,10 +10,10 @@ export class TestingRenderer extends AbstractRenderer {
   private renderImpl(node: TreeNode): string {
     const result = [] as string[]
 
-    const traverse = (node: TreeNode, level: number) => {
-      result.push(this.format(level, node.label))
+    const traverse = (_node: TreeNode, level: number) => {
+      result.push(this.format(level, _node.label))
 
-      const nodes = node.nodes
+      const nodes = _node.nodes
       if (!nodes) {
         return
       }

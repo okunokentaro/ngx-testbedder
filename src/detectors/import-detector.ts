@@ -2,8 +2,8 @@ import * as ts from 'typescript'
 
 import { isImportDeclaration, isNamedImports } from '../type-guards'
 import { AbstractDetector } from './abstract-detector'
-import { ClassLocation } from '../class-location';
-import { ClassLocations } from '../class-locations';
+import { ClassLocation } from '../class-location'
+import { ClassLocations } from '../class-locations'
 
 export class ImportDetector extends AbstractDetector {
 
@@ -11,8 +11,8 @@ export class ImportDetector extends AbstractDetector {
 
   constructor(
     private sourceFile: ts.SourceFile,
-    private params: string[],
-    private fileDir: string
+    private params:     string[],
+    private fileDir:    string,
   ) {
     super()
   }
@@ -61,7 +61,7 @@ export class ImportDetector extends AbstractDetector {
         .map(k => {
           return new ClassLocation(k, pathMap.get(k))
         }),
-      this.fileDir
+      this.fileDir,
     )
   }
 

@@ -10,6 +10,7 @@
     "ordered-imports": false,
     "interface-name": false,
     "object-literal-sort-keys": false,
+    "no-var-requires": false,
     "typedef-whitespace": [
       true,
       {
@@ -22,7 +23,7 @@
       {
         "call-signature": "onespace",
         "index-signature": "onespace",
-        "parameter": "onespace",
+        "parameter": "space",
         "property-declaration": "space",
         "variable-declaration": "onespace"
       }

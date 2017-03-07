@@ -1,5 +1,5 @@
-import { TreeWithMap } from '../tree-builder';
-import { OptionsNonNull } from '../facade';
+import { TreeWithMap } from '../tree-builder'
+import { OptionsNonNull } from '../facade'
 
 export abstract class AbstractRenderer {
 

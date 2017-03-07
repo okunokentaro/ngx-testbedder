@@ -20,21 +20,21 @@ export class ConstructorParameterDetector extends AbstractDetector {
     if (this.detectedRanges.length < 1) {
       return {
         includingClassName: this.includingClassName,
-        injectNames: []
+        injectNames:        [],
       }
     }
     ts.forEachChild(this.sourceFile, _node => this.visit(_node))
     return {
       includingClassName: this.includingClassName,
-      injectNames: this.injectClassNames
+      injectNames:        this.injectClassNames,
     }
   }
 
   private visit(node: ts.Node) {
     if (isClassDeclaration(node)) {
       this.classDeclarations.push({
-        name: node.name.text,
-        position: [node.pos, node.end]
+        name:     node.name.text,
+        position: [node.pos, node.end],
       })
       ts.forEachChild(node, _node => this.visit(_node))
       return

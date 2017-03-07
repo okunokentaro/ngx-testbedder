@@ -48,8 +48,8 @@
     "url": "https://github.com/armorik83/ng-testbedder.git"
   },
   "scripts": {
-    "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
     "build": "tsc -p ./ && cp ./fixture/tsconfig.json ./lib/fixture/tsconfig.json",
+    "dev": "yarn run build && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
     "test": "tsc -p ./ && ava --match\"test.js\" --verbose"
   }
 }

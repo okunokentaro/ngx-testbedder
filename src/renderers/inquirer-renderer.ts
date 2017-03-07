@@ -1,11 +1,11 @@
 import * as pathModule from 'path'
 import * as inquirer from 'inquirer'
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'events'
 
-import { TreeWithMap, TreeNode } from '../tree-builder';
-import { AbstractRenderer } from './abstract-renderer';
-import { ArchyRenderer } from './archy-renderer';
-import { OptionsNonNull } from '../facade';
+import { TreeWithMap, TreeNode } from '../tree-builder'
+import { AbstractRenderer } from './abstract-renderer'
+import { ArchyRenderer } from './archy-renderer'
+import { OptionsNonNull } from '../facade'
 
 const resolveEventName = 'resolve'
 interface SelfEventEmitter extends EventEmitter {
@@ -37,9 +37,9 @@ export class InquirerRenderer extends AbstractRenderer {
 
   private async renderPrompt(chosens: string[], maxLevel: number) {
     const decimateNode = (
-      node: TreeNode,
-      _chosens: string[],
-      _maxLevel: number
+      node:      TreeNode,
+      _chosens:  string[],
+      _maxLevel: number,
     ): TreeNode => {
       const nodes = this.getLevel(node) <= _maxLevel && _chosens.includes(node.label)
         ? node.nodes.map(n => decimateNode(n, _chosens, _maxLevel))
@@ -49,8 +49,8 @@ export class InquirerRenderer extends AbstractRenderer {
     }
 
     const reCalcTreeLines = async (
-      _chosens: string[],
-      _maxLevel: number
+      _chosens:  string[],
+      _maxLevel: number,
     ): Promise<string[]> => {
       const decimatedTree = decimateNode(this.treeWithMap.treeNode, _chosens, _maxLevel)
 
@@ -78,7 +78,7 @@ export class InquirerRenderer extends AbstractRenderer {
 
     this.getInquirer().prompt(questions).then(async (answer: {tree: string[]}) => {
       const _chosens = Array.from(
-        new Set(answer.tree.map(item => this.getClassName(item)))
+        new Set(answer.tree.map(item => this.getClassName(item))),
       )
 
       if (!answer.tree.includes(doneText)) {
@@ -86,18 +86,18 @@ export class InquirerRenderer extends AbstractRenderer {
         return
       }
 
-      const treeLines = await reCalcTreeLines(
+      const _treeLines = await reCalcTreeLines(
         _chosens.filter(item => item !== doneText),
-        maxLevel + 1
+        maxLevel + 1,
       )
 
       const unchosens = Array.from(
         new Set(
-          treeLines
+          _treeLines
             .filter(item => item !== doneText)
             .map(item => this.getClassName(item))
-            .filter(item => !_chosens.includes(item))
-        )
+            .filter(item => !_chosens.includes(item)),
+        ),
       )
 
       const imports       = this.formatImports(_chosens.filter(item => item !== doneText))
@@ -166,7 +166,7 @@ export class InquirerRenderer extends AbstractRenderer {
           const baseName = pathModule.basename(tmp2)
           const replaced = baseName.replace(
             new RegExp(this.options.mockPathPattern),
-            this.options.mockPathReplacement
+            this.options.mockPathReplacement,
           )
           return [pathModule.dirname(tmp2), replaced].join(pathModule.sep)
         })()
