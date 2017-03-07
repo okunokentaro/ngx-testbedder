@@ -49,27 +49,31 @@ const main = async (argv: any) => {
 const argv = yargs
   .option('tsconfig', {
     alias: 'c',
-    describe: '(Optional) tsconfig.json path, default ./tsconfig.json or ./src/tsconfig.json'
+    describe: '(Optional) You can specify a file path of tsconfig.json. default \'./tsconfig.json\' or \'./src/tsconfig.json\' if not found'
   })
   .option('verbose', {
     alias: 'v',
     boolean: true,
-    describe: 'Output verbose'
+    describe: 'It prints debug log verbose'
   })
   .option('tree', {
     alias: 't',
     boolean: true,
-    describe: 'Print a tree only'
+    describe: 'It displays only a tree. The prompt is not displayed'
   })
   .option('pattern', {
     alias: 'pt',
-    describe: '(Optional) mockPathPattern'
+    describe: '(Optional) You can specify a pattern to name mock file. Default is \'(.*)\.ts\''
   })
   .option('replacement', {
     alias: 'rp',
-    describe: '(Optional) mockPathReplacement'
+    describe: '(Optional) You can specify the replacement result for the above `--pattern`. Default is \'$1.mock.ts\''
   })
   .help()
+  .version(() => {
+    const pkg = require('../../package.json')
+    return [pkg.name, pkg.version].join(' ')
+  })
   .argv
 
 setVerboseLevel(argv)
