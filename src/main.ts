@@ -3,6 +3,7 @@ import * as yargs from 'yargs'
 
 import { Facade } from './facade';
 import { setVerboseLevel } from './logger';
+import { ArchyRenderer } from './renderers/archy-renderer';
 
 const console  = require('better-console')
 const findRoot = require('find-root')
@@ -33,9 +34,12 @@ const main = async (argv: any) => {
     }
   })()
 
+  const renderer = argv.tree ? new ArchyRenderer() : undefined
+
   const facade = new Facade(target, tsconfig, rootRelativePath, {
     mockPathPattern:     argv.pattern,
     mockPathReplacement: argv.replacement,
+    renderer,
   })
 
   const result = await facade.run()
@@ -43,14 +47,6 @@ const main = async (argv: any) => {
 }
 
 const argv = yargs
-  .option('pattern', {
-    alias: 'pt',
-    describe: '(Optional) mockPathPattern'
-  })
-  .option('replacement', {
-    alias: 'rp',
-    describe: '(Optional) mockPathReplacement'
-  })
   .option('tsconfig', {
     alias: 'c',
     describe: '(Optional) tsconfig.json path, default ./tsconfig.json or ./src/tsconfig.json'
@@ -59,6 +55,19 @@ const argv = yargs
     alias: 'v',
     boolean: true,
     describe: 'Output verbose'
+  })
+  .option('tree', {
+    alias: 't',
+    boolean: true,
+    describe: 'Print a tree only'
+  })
+  .option('pattern', {
+    alias: 'pt',
+    describe: '(Optional) mockPathPattern'
+  })
+  .option('replacement', {
+    alias: 'rp',
+    describe: '(Optional) mockPathReplacement'
   })
   .help()
   .argv
