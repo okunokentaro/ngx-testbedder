@@ -36,6 +36,28 @@ $ $(npm bin)/testbedder ./src/app/app.component.ts
 ### Demo
 ![demo]
 
+```
+? Which module do you use as real? (Press <space> to select, <a> to toggle all, <i> to inverse selection)
+❯◯ Done
+ ◉ DetailComponent
+ ◯ ├── AppActionsService
+ ◯ ├── AppDispatcherService
+ ◯ ├── AppStoreService
+ ◯ ├── ProjectsActionsService
+ ◯ └── ProjectsStoreService
+```
+
+The prompt displays a checkable dependency tree.
+
+- Checked
+  - We will use the real module in the test.
+- Unchecked
+  - We will replace it with a mock module in the test.
+  
+If you press the Enter key without checking `Done`, the tree will be updated with other modules that the real module depends on.
+
+To complete, check `Done` and press the Enter key. Then, the result will be output.
+
 ## API
 
 ### testbedder
