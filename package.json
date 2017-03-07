@@ -1,6 +1,6 @@
 {
   "name": "ng-testbedder",
-  "version": "0.1.0",
+  "version": "0.1.0-pre.0",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "bin": "index.js",
   "dependencies": {
