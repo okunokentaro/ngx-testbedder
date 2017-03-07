@@ -8,7 +8,7 @@ import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
 import { ClassLocations } from './class-locations';
-import { DEBUG } from './main';
+import { DEBUG } from './logger';
 
 const console = require('better-console')
 

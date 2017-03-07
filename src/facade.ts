@@ -5,7 +5,6 @@ import { Solver, Solved } from './solver';
 import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 import { InquirerRenderer } from './renderers/inquirer-renderer';
-import { DEBUG } from './main';
 
 const findRoot = require('find-root')
 const console  = require('better-console')

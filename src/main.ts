@@ -1,6 +1,7 @@
 import * as yargs from 'yargs'
 
 import { Facade } from './facade';
+import { setVerboseLevel } from './logger';
 
 const console  = require('better-console')
 const packpath = require('packpath')
@@ -38,10 +39,5 @@ const argv = yargs
   .help()
   .argv
 
-const verboseLevel = argv.verbose ? 2 : 0;
-
-export const WARN  = (...args: any[]) => { verboseLevel >= 0 && console.log.apply(console, args) }
-export const INFO  = (...args: any[]) => { verboseLevel >= 1 && console.log.apply(console, args) }
-export const DEBUG = (...args: any[]) => { verboseLevel >= 2 && console.log.apply(console, [`[verb] ${args[0]}`, ...args.slice(1)]) }
-
+setVerboseLevel(argv)
 main(argv)
