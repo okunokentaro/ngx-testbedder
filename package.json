@@ -2,7 +2,12 @@
   "name": "ng-testbedder",
   "version": "0.1.0-pre.1",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
-  "bin": "index.js",
+  "bin": {
+    "testbedder": "index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/armorik83/ng-testbedder/issues"
+  },
   "dependencies": {
     "archy": "^1.0.0",
     "better-console": "^1.0.0",
@@ -22,12 +27,27 @@
     "sinon": "next",
     "tslint": "^4.5.1"
   },
+  "engines": {
+    "node": ">= 6.9.0",
+    "npm": ">= 3.0.0"
+  },
   "files": [
     "lib/src",
     "index.js"
   ],
+  "homepage": "https://github.com/armorik83/ng-testbedder",
+  "keywords": [
+    "angular",
+    "mock",
+    "test",
+    "testbed"
+  ],
   "license": "MIT",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/armorik83/ng-testbedder.git"
+  },
   "scripts": {
     "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
     "prepare": "tsc -p ./ && cp ./fixture/tsconfig.json ./lib/fixture/tsconfig.json",
