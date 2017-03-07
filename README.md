@@ -46,21 +46,21 @@ $ testbedder [TypeScript file path] [Options]
 
 #### Options
 
-##### --tsconfig
+**`--tsconfig`**
 
 **Alias:** `-c`
 
 - You can specify a file path of `tsconfig.json`.
 - As default, it will look for `./tsconfig.json`. If not found, search inside `./src/tsconfig.json`.
 
-##### --verbose
+**`--verbose`**
 
 **Alias:** `-v`
 
 - It prints debug log verbose.
 - Default is `false`
 
-##### --tree
+**`--tree`**
 
 **Alias:** `-t`
 
@@ -68,7 +68,7 @@ $ testbedder [TypeScript file path] [Options]
 - The prompt is not displayed.
 - Default is `false`
 
-##### --pattern
+**`--pattern`**
 
 **Alias:** `--pt`
 
@@ -78,18 +78,18 @@ $ testbedder [TypeScript file path] [Options]
   - Please change this naming convention within the scope of the regular expression if you want.
 - Default is `(.*)\.ts`
 
-##### --replacement
+**`--replacement`**
 
 **Alias:** `--rp`
 
 - You can specify the replacement result for the above `--pattern`.
 - Default is `$1.mock.ts`
 
-#### --help
+**`--help`**
 
 - It shows help.
 
-#### --version
+**`--version`**
 
 - It shows the version.
 
