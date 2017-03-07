@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 'use strict';
-require('./dist/src/main');
+require('./lib/src/main');

@@ -22,12 +22,16 @@
     "sinon": "next",
     "tslint": "^4.5.1"
   },
+  "files": [
+    "lib/src",
+    "index.js"
+  ],
   "license": "MIT",
   "main": "index.js",
   "scripts": {
     "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
-    "prepare": "tsc -p ./ && cp ./fixture/tsconfig.json ./dist/fixture/tsconfig.json",
-    "start": "yarn run prepare && node ./dist/src/main.js",
+    "prepare": "tsc -p ./ && cp ./fixture/tsconfig.json ./lib/fixture/tsconfig.json",
+    "start": "yarn run prepare && node ./lib/src/main.js",
     "test": "tsc -p ./ && ava --match\"test.js\" --verbose"
   }
 }
