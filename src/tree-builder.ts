@@ -14,7 +14,6 @@ export interface TreeWithMap {
 
 export class TreeBuilder {
 
-
   private solvedPool        = [] as Solved[]
   private alreadyAddedPaths = new Set<string>()
   private allowDuplicates   = true
