@@ -10,8 +10,6 @@ import { EventEmitter } from 'events';
 import { ClassLocations } from './class-locations';
 import { DEBUG } from './logger';
 
-const console = require('better-console')
-
 export interface Solved {
   path:  string,
   name:  string,

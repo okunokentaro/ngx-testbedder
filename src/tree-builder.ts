@@ -1,8 +1,6 @@
 import { Solved } from './solver';
 import { OptionsNonNull } from './facade';
 
-const console = require('better-console')
-
 export interface TreeNode {
   label: string
   nodes: TreeNode[]

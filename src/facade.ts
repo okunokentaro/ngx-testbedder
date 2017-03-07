@@ -7,7 +7,6 @@ import { AbstractRenderer } from './renderers/abstract-renderer';
 import { InquirerRenderer } from './renderers/inquirer-renderer';
 
 const findRoot = require('find-root')
-const console  = require('better-console')
 
 type Partial<T> = {
   [P in keyof T]?: T[P]
