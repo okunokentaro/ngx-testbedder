@@ -5,6 +5,7 @@ import { Solver, Solved } from './solver';
 import { TreeBuilder } from './tree-builder';
 import { AbstractRenderer } from './renderers/abstract-renderer';
 import { InquirerRenderer } from './renderers/inquirer-renderer';
+import { DEBUG } from './main';
 
 const findRoot = require('find-root')
 const console  = require('better-console')
@@ -48,7 +49,7 @@ export class Facade {
     private projectRoot: string,
     _options?: Options
   ) {
-    this.options = Object.assign({}, defaults, _options) as OptionsNonNull
+    this.options = this.formatPartialOptions(_options)
 
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program  = ts.createProgram([this.filePath], this.tsconfig)
@@ -71,6 +72,15 @@ export class Facade {
       console.info(e.message)
       return Promise.resolve('')
     }
+  }
+
+  private formatPartialOptions(options: Options): OptionsNonNull {
+    Object.keys(options).forEach(key => {
+      if (typeof (options as any)[key] === 'undefined') {
+        delete (options as any)[key]
+      }
+    })
+    return Object.assign({}, defaults, options) as OptionsNonNull
   }
 
   private dealWithSolved(solved: Solved) {

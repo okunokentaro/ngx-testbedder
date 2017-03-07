@@ -8,6 +8,7 @@ import { ComponentDetector } from './detectors/component-detector';
 import { TextRangeTuple } from './detectors/abstract-detector';
 import { EventEmitter } from 'events';
 import { ClassLocations } from './class-locations';
+import { DEBUG } from './main';
 
 const console = require('better-console')
 
@@ -80,15 +81,23 @@ export class Solver {
   }
 
   private detectInjectableAndComponent(src: ts.SourceFile) {
-    this.sink.injectable.push({
-      path:   this.getFullPath(src.fileName),
-      ranges: new InjectableDetector(src).detect(),
-    })
+    this.sink.injectable.push((() => {
+      const path   = this.getFullPath(src.fileName)
+      const ranges = new InjectableDetector(src).detect()
+      if (0 < ranges.length) {
+        DEBUG(`@Injectable() was detected in ${path}`)
+      }
+      return {path, ranges}
+    })())
 
-    this.sink.component.push({
-      path: this.getFullPath(src.fileName),
-      ranges: new ComponentDetector(src).detect(),
-    })
+    this.sink.component.push((() => {
+      const path   = this.getFullPath(src.fileName)
+      const ranges = new ComponentDetector(src).detect()
+      if (0 < ranges.length) {
+        DEBUG(`@Component() was detected in ${path}`)
+      }
+      return {path, ranges}
+    })())
   }
 
   private getFullPath(partialPath: string): string {
