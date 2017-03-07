@@ -34,8 +34,7 @@ $ $(npm bin)/testbedder ./src/app/app.component.ts
 ```
 
 ### Demo
-
-
+![demo]
 
 ## API
 
@@ -105,3 +104,5 @@ $ testbedder [TypeScript file path] [Options]
 ## License
 
 MIT © [OKUNOKENTARO](https://github.com/armorik83)
+
+[demo]: https://raw.githubusercontent.com/armorik83/ng-testbedder/master/doc/demo.gif
