@@ -11,19 +11,15 @@ const tsconfigFileName = 'tsconfig.json'
 const angularCliRoot   = 'src'
 
 const main = async (argv: any) => {
-  const arg = argv._[0]
-  if (!arg) {
+  const target = argv._[0]
+  if (!target) {
     console.error('[ERROR] A file path is required!')
     return
   }
 
-  const rootRelativepath = (() => {
-    if (pathModule.isAbsolute(arg)) {
-      return findRoot(arg)
-    }
-    const absPath = pathModule.resolve(__dirname, arg)
-    return findRoot(absPath)
-  })()
+  const rootRelativepath = pathModule.isAbsolute(target)
+    ? findRoot(target)
+    : findRoot(argv['$0'])
 
   const tsconfig = (() => {
     try {
@@ -37,7 +33,7 @@ const main = async (argv: any) => {
     }
   })()
 
-  const facade = new Facade(arg, tsconfig, rootRelativepath, {
+  const facade = new Facade(target, tsconfig, rootRelativepath, {
     mockPathPattern:     argv.pattern,
     mockPathReplacement: argv.replacement,
   })
