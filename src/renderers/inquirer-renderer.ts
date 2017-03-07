@@ -5,6 +5,7 @@ import { EventEmitter } from 'events';
 import { TreeWithMap, TreeNode } from '../tree-builder';
 import { AbstractRenderer } from './abstract-renderer';
 import { ArchyRenderer } from './archy-renderer';
+import { OptionsNonNull } from '../facade';
 
 const resolveEventName = 'resolve'
 interface SelfEventEmitter extends EventEmitter {
@@ -17,14 +18,16 @@ export class InquirerRenderer extends AbstractRenderer {
 
   private emitter:     SelfEventEmitter
   private treeWithMap: TreeWithMap
+  private options:     OptionsNonNull
 
   constructor() {
     super()
     this.emitter = new EventEmitter() as SelfEventEmitter
   }
 
-  render(treeWithMap: TreeWithMap): Promise<string> {
+  render(treeWithMap: TreeWithMap, options: OptionsNonNull): Promise<string> {
     this.treeWithMap = treeWithMap
+    this.options     = options
     this.renderPrompt([this.treeWithMap.treeNode.label], 1)
 
     return new Promise(resolve => {
@@ -143,8 +146,8 @@ export class InquirerRenderer extends AbstractRenderer {
       .map(cls => {
         const absPath = this.treeWithMap.pathMap.get(cls)
         const path    = (() => {
-          const tmp = pathModule.relative(baseDirPath, absPath)
-          return  /^\./.test(tmp) ? tmp : `./${tmp}`
+          const tmp1 = pathModule.relative(baseDirPath, absPath)
+          return /^\./.test(tmp1) ? tmp1 : `./${tmp1}`
         })()
         return `import { ${cls} } from '${path}';`
       })
@@ -158,8 +161,14 @@ export class InquirerRenderer extends AbstractRenderer {
       .map(cls => {
         const absPath = this.treeWithMap.pathMap.get(cls)
         const path    = (() => {
-          const tmp = pathModule.relative(baseDirPath, absPath)
-          return  /^\./.test(tmp) ? tmp : `./${tmp}`
+          const tmp1 = pathModule.relative(baseDirPath, absPath)
+          const tmp2 = /^\./.test(tmp1) ? tmp1 : `./${tmp1}`
+          const baseName = pathModule.basename(tmp2)
+          const replaced = baseName.replace(
+            new RegExp(this.options.mockPathPattern),
+            this.options.mockPathReplacement
+          )
+          return [pathModule.dirname(tmp2), replaced].join(pathModule.sep)
         })()
 
         return `import { ${cls}Mock } from '${path}';`

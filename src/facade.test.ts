@@ -168,9 +168,9 @@ test(async t => {
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
     'import { AService } from \'./01.ts\';',
-    'import { BServiceMock } from \'./02.ts\';',
-    'import { CServiceMock } from \'./03.ts\';',
-    'import { DServiceMock } from \'./04.ts\';',
+    'import { BServiceMock } from \'./02.mock.ts\';',
+    'import { CServiceMock } from \'./03.mock.ts\';',
+    'import { DServiceMock } from \'./04.mock.ts\';',
     'AService,',
     '{provide: BService, useClass: BServiceMock},',
     '{provide: CService, useClass: CServiceMock},',
@@ -204,9 +204,9 @@ test(async t => {
     'import { BService } from \'./02.ts\';',
     'import { DService } from \'./04.ts\';',
     'import { IService } from \'./09.ts\';',
-    'import { EServiceMock } from \'./05.ts\';',
-    'import { FServiceMock } from \'./06.ts\';',
-    'import { CServiceMock } from \'./03.ts\';',
+    'import { EServiceMock } from \'./05.mock.ts\';',
+    'import { FServiceMock } from \'./06.mock.ts\';',
+    'import { CServiceMock } from \'./03.mock.ts\';',
     'AService,',
     'BService,',
     'DService,',
@@ -238,16 +238,68 @@ test(async t => {
   const expected = [
     'import { AService } from \'./01.ts\';',
     'import { BService } from \'./02.ts\';',
-    'import { DServiceMock } from \'./04.ts\';',
-    'import { EServiceMock } from \'./05.ts\';',
-    'import { FServiceMock } from \'./06.ts\';',
-    'import { CServiceMock } from \'./03.ts\';',
+    'import { DServiceMock } from \'./04.mock.ts\';',
+    'import { EServiceMock } from \'./05.mock.ts\';',
+    'import { FServiceMock } from \'./06.mock.ts\';',
+    'import { CServiceMock } from \'./03.mock.ts\';',
     'AService,',
     'BService,',
     '{provide: DService, useClass: DServiceMock},',
     '{provide: EService, useClass: EServiceMock},',
     '{provide: FService, useClass: FServiceMock},',
     '{provide: CService, useClass: CServiceMock},',
+  ]
+
+  t.deepEqual(result, expected)
+})
+
+test(async t => {
+  const renderer = new InquirerRenderer()
+  const facade   = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      renderer,
+      mockPathPattern: '(.*)\.ts',
+      mockPathReplacement: '$1.mock.ts',
+    }
+  )
+
+  makeInquirerStub(renderer, [
+    'Done, AService',
+  ])
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v).slice(0, 2)
+  const expected = [
+    'import { AService } from \'./01.ts\';',
+    'import { BServiceMock } from \'./02.mock.ts\';',
+  ]
+
+  t.deepEqual(result, expected)
+})
+
+test(async t => {
+  const renderer = new InquirerRenderer()
+  const facade   = new Facade(
+    './fixture/using-injectable-multi-parents/01.ts',
+    tsconfig,
+    packpath.self(),
+    {
+      renderer,
+      mockPathPattern: '(.*)\.ts',
+      mockPathReplacement: '$1-mock.ts',
+    }
+  )
+
+  makeInquirerStub(renderer, [
+    'Done, AService',
+  ])
+
+  const result   = (await facade.run()).split('\n').filter(v => !!v).slice(0, 2)
+  const expected = [
+    'import { AService } from \'./01.ts\';',
+    'import { BServiceMock } from \'./02-mock.ts\';',
   ]
 
   t.deepEqual(result, expected)

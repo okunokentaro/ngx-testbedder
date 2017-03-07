@@ -9,23 +9,30 @@ import { InquirerRenderer } from './renderers/inquirer-renderer';
 const findRoot = require('find-root')
 const console  = require('better-console')
 
-export interface Options {
-  allowDuplicates?: boolean
-  renderer?:        AbstractRenderer
+type Partial<T> = {
+  [P in keyof T]?: T[P]
 }
 
 export interface OptionsNonNull {
-  allowDuplicates: boolean
-  renderer:        AbstractRenderer
+  allowDuplicates:     boolean
+  renderer:            AbstractRenderer
+  mockPathPattern:     string
+  mockPathReplacement: string
 }
 
+export interface Options extends Partial<OptionsNonNull> { }
+
+
 const defaults = {
-  allowDuplicates: true,
-  renderer: new InquirerRenderer(),
+  allowDuplicates:     true,
+  renderer:            new InquirerRenderer(),
+  mockPathPattern:     '(.*)\.ts',
+  mockPathReplacement: '$1.mock.ts',
 } as Options
 
 export class Facade {
 
+  private options:  OptionsNonNull
   private filePath: string
   private program:  ts.Program
   private solver:   Solver
@@ -41,13 +48,13 @@ export class Facade {
     private projectRoot: string,
     _options?: Options
   ) {
-    const options = Object.assign({}, defaults, _options) as OptionsNonNull
+    this.options = Object.assign({}, defaults, _options) as OptionsNonNull
 
     this.filePath = pathModule.resolve(this.projectRoot, filePath)
     this.program  = ts.createProgram([this.filePath], this.tsconfig)
     this.solver   = new Solver(this.filePath, this.program, projectRoot, 1)
-    this.renderer = options.renderer
-    this.builder  = new TreeBuilder(options)
+    this.renderer = this.options.renderer
+    this.builder  = new TreeBuilder(this.options)
   }
 
   run(): Promise<string> {
@@ -59,7 +66,7 @@ export class Facade {
 
     try {
       const built = this.builder.build()
-      return this.renderer.render(built)
+      return this.renderer.render(built, this.options)
     } catch(e) {
       console.info(e.message)
       return Promise.resolve('')
