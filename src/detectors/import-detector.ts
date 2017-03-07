@@ -1,6 +1,6 @@
 import * as ts from 'typescript'
 
-import { isTypeReference, isImportDeclaration, isNamedImports } from '../type-guards'
+import { isImportDeclaration, isNamedImports } from '../type-guards'
 import { AbstractDetector } from './abstract-detector'
 import { ClassLocation } from '../class-location';
 import { ClassLocations } from '../class-locations';
