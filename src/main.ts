@@ -20,7 +20,7 @@ const main = async (argv: any) => {
 
   const rootRelativePath = pathModule.isAbsolute(target)
     ? findRoot(target)
-    : findRoot(argv['$0'])
+    : findRoot(process.cwd())
 
   const tsconfig = (() => {
     try {
