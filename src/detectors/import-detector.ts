@@ -42,9 +42,16 @@ export class ImportDetector extends AbstractDetector {
   }
 
   private getElements(node: ts.ImportDeclaration): ts.ImportSpecifier[] {
+    if (!node.importClause) {
+      // Only import but not used as variable
+      // e.g.) import 'rxjs/add/operator/switchMap';
+      return []
+    }
+
     if (!isNamedImports(node.importClause.namedBindings)) {
       return []
     }
+
     return Array.from(node.importClause.namedBindings.elements)
   }
 
