@@ -1,10 +1,9 @@
 {
-  "name": "ng-test-helper",
+  "name": "ng-testbedder",
   "version": "0.1.0",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "dependencies": {
     "archy": "^1.0.0",
-    "ava": "^0.18.2",
     "better-console": "^1.0.0",
     "chalk": "^1.1.3",
     "find-root": "^1.0.0",
@@ -18,15 +17,16 @@
     "@types/node": "^7.0.5",
     "@types/sinon": "^1.16.35",
     "@types/yargs": "^6.6.0",
+    "ava": "^0.18.2",
     "sinon": "next",
     "tslint": "^4.5.1"
   },
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
     "prepare": "tsc -p ./ && cp ./fixture/tsconfig.json ./dist/fixture/tsconfig.json",
     "start": "yarn run prepare && node ./dist/src/main.js",
-    "dev": "yarn start && tslint -c ./tslint.json ./src/**/*.ts ./sample/**/*.ts",
     "test": "tsc -p ./ && ava --match\"test.js\" --verbose"
   }
 }
