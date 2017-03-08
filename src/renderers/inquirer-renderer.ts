@@ -100,7 +100,7 @@ export class InquirerRenderer extends AbstractRenderer {
         ),
       )
 
-      const imports       = this.formatImports(_chosens.filter(item => item !== doneText))
+      const imports       = this.formatImports(_chosens.concat(unchosens).filter(item => item !== doneText))
       const mockImports   = this.formatMockImports(unchosens)
       const providers     = this.formatProviders(_chosens.filter(item => item !== doneText))
       const mockProviders = this.formatMockProviders(unchosens)
@@ -149,7 +149,11 @@ export class InquirerRenderer extends AbstractRenderer {
           const tmp1 = pathModule.relative(baseDirPath, absPath)
           return /^\./.test(tmp1) ? tmp1 : `./${tmp1}`
         })()
-        return `import { ${cls} } from '${path}';`
+
+        const ext            = pathModule.extname(path)
+        const pathWithoutExt = path.split(ext).slice(0, -1).join(ext)
+
+        return `import { ${cls} } from '${pathWithoutExt}';`
       })
   }
 
@@ -171,7 +175,10 @@ export class InquirerRenderer extends AbstractRenderer {
           return [pathModule.dirname(tmp2), replaced].join(pathModule.sep)
         })()
 
-        return `import { ${cls}Mock } from '${path}';`
+        const ext            = pathModule.extname(path)
+        const pathWithoutExt = path.split(ext).slice(0, -1).join(ext)
+
+        return `import { ${cls}Mock } from '${pathWithoutExt}';`
       }).filter(v => !!v)
   }
 

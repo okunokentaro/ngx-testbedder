@@ -182,10 +182,13 @@ test(async t => {
 
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
-    'import { AService } from \'./01.ts\';',
-    'import { BServiceMock } from \'./02.mock.ts\';',
-    'import { CServiceMock } from \'./03.mock.ts\';',
-    'import { DServiceMock } from \'./04.mock.ts\';',
+    'import { AService } from \'./01\';',
+    'import { BService } from \'./02\';',
+    'import { CService } from \'./03\';',
+    'import { DService } from \'./04\';',
+    'import { BServiceMock } from \'./02.mock\';',
+    'import { CServiceMock } from \'./03.mock\';',
+    'import { DServiceMock } from \'./04.mock\';',
     'AService,',
     '{provide: BService, useClass: BServiceMock},',
     '{provide: CService, useClass: CServiceMock},',
@@ -216,13 +219,16 @@ test(async t => {
 
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
-    'import { AService } from \'./01.ts\';',
-    'import { BService } from \'./02.ts\';',
-    'import { DService } from \'./04.ts\';',
-    'import { IService } from \'./09.ts\';',
-    'import { EServiceMock } from \'./05.mock.ts\';',
-    'import { FServiceMock } from \'./06.mock.ts\';',
-    'import { CServiceMock } from \'./03.mock.ts\';',
+    'import { AService } from \'./01\';',
+    'import { BService } from \'./02\';',
+    'import { DService } from \'./04\';',
+    'import { IService } from \'./09\';',
+    'import { EService } from \'./05\';',
+    'import { FService } from \'./06\';',
+    'import { CService } from \'./03\';',
+    'import { EServiceMock } from \'./05.mock\';',
+    'import { FServiceMock } from \'./06.mock\';',
+    'import { CServiceMock } from \'./03.mock\';',
     'AService,',
     'BService,',
     'DService,',
@@ -253,12 +259,16 @@ test(async t => {
 
   const result   = (await facade.run()).split('\n').filter(v => !!v)
   const expected = [
-    'import { AService } from \'./01.ts\';',
-    'import { BService } from \'./02.ts\';',
-    'import { DServiceMock } from \'./04.mock.ts\';',
-    'import { EServiceMock } from \'./05.mock.ts\';',
-    'import { FServiceMock } from \'./06.mock.ts\';',
-    'import { CServiceMock } from \'./03.mock.ts\';',
+    'import { AService } from \'./01\';',
+    'import { BService } from \'./02\';',
+    'import { DService } from \'./04\';',
+    'import { EService } from \'./05\';',
+    'import { FService } from \'./06\';',
+    'import { CService } from \'./03\';',
+    'import { DServiceMock } from \'./04.mock\';',
+    'import { EServiceMock } from \'./05.mock\';',
+    'import { FServiceMock } from \'./06.mock\';',
+    'import { CServiceMock } from \'./03.mock\';',
     'AService,',
     'BService,',
     '{provide: DService, useClass: DServiceMock},',
@@ -288,13 +298,8 @@ test(async t => {
     'Done, AService',
   ])
 
-  const result   = (await facade.run()).split('\n').filter(v => !!v).slice(0, 2)
-  const expected = [
-    'import { AService } from \'./01.ts\';',
-    'import { BServiceMock } from \'./02.mock.ts\';',
-  ]
-
-  t.deepEqual(result, expected)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
+  t.deepEqual(result[4], 'import { BServiceMock } from \'./02.mock\';')
 })
 
 test(async t => {
@@ -315,11 +320,6 @@ test(async t => {
     'Done, AService',
   ])
 
-  const result   = (await facade.run()).split('\n').filter(v => !!v).slice(0, 2)
-  const expected = [
-    'import { AService } from \'./01.ts\';',
-    'import { BServiceMock } from \'./02-mock.ts\';',
-  ]
-
-  t.deepEqual(result, expected)
+  const result = (await facade.run()).split('\n').filter(v => !!v)
+  t.deepEqual(result[4], 'import { BServiceMock } from \'./02-mock\';')
 })
