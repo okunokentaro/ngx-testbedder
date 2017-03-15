@@ -1,9 +1,33 @@
 # ng-testbedder
 
-`ng-testbedder` helps you to writing the TestBed for an Angular (2.0+) application.
+`ng-testbedder` helps you to write the TestBed for an Angular (2.0+) application.
 
-It displays a tree by based on dependencies of given file to this command. In addition, as you write integration tests in an Angular applications you can select the real modules and mock modules to use for testing. Then, the import statement necessary for that purpose and providers for a test bed are generated and output on the screen.
+It displays a tree based on dependencies of a given file to this command. In addition, as you write integration tests in an Angular applications you can select the real modules and mock modules to use for testing. Then, the import statement necessary for that purpose and providers for a test bed are generated and output on the screen.
 
+## Demo
+![demo]
+
+```
+? Which module do you use as real? (Press <space> to select, <a> to toggle all, <i> to inverse selection)
+❯◯ Done
+ ◉ DetailComponent
+ ◯ ├── AppActionsService
+ ◯ ├── AppDispatcherService
+ ◯ ├── AppStoreService
+ ◯ ├── ProjectsActionsService
+ ◯ └── ProjectsStoreService
+```
+
+The prompt displays a checkable dependency tree.
+
+- Checked
+  - We will use the real module in the test.
+- Unchecked
+  - We will replace it with a mock module in the test.
+  
+If you press the Enter key without checking `Done`, the tree will be updated with other modules that the real module depends on.
+
+To complete, check `Done` and press the Enter key. Then, the result will be output.
 
 ## Installation
 
@@ -32,31 +56,6 @@ $ testbedder ./src/app/app.component.ts
 
 $ $(npm bin)/testbedder ./src/app/app.component.ts
 ```
-
-### Demo
-![demo]
-
-```
-? Which module do you use as real? (Press <space> to select, <a> to toggle all, <i> to inverse selection)
-❯◯ Done
- ◉ DetailComponent
- ◯ ├── AppActionsService
- ◯ ├── AppDispatcherService
- ◯ ├── AppStoreService
- ◯ ├── ProjectsActionsService
- ◯ └── ProjectsStoreService
-```
-
-The prompt displays a checkable dependency tree.
-
-- Checked
-  - We will use the real module in the test.
-- Unchecked
-  - We will replace it with a mock module in the test.
-  
-If you press the Enter key without checking `Done`, the tree will be updated with other modules that the real module depends on.
-
-To complete, check `Done` and press the Enter key. Then, the result will be output.
 
 ## API
 
@@ -115,7 +114,7 @@ $ testbedder [TypeScript file path] [Options]
 
 - It shows the version.
 
-## Contributing
+## Contributions
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
