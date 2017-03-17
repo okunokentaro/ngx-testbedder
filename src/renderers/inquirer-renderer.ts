@@ -146,7 +146,7 @@ export class InquirerRenderer extends AbstractRenderer {
       .map(cls => {
         const absPath = this.treeWithMap.pathMap.get(cls)
         const path    = (() => {
-          const tmp1 = pathModule.relative(baseDirPath, absPath)
+          const tmp1 = pathModule.relative(baseDirPath, absPath).replace(/\\/g, pathModule.posix.sep)
           return /^\./.test(tmp1) ? tmp1 : `./${tmp1}`
         })()
 
@@ -172,7 +172,7 @@ export class InquirerRenderer extends AbstractRenderer {
             new RegExp(this.options.mockPathPattern),
             this.options.mockPathReplacement,
           )
-          return [pathModule.dirname(tmp2), replaced].join(pathModule.sep)
+          return [pathModule.dirname(tmp2), replaced].join(pathModule.posix.sep)
         })()
 
         const ext            = pathModule.extname(path)

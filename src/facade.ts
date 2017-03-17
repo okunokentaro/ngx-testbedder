@@ -121,7 +121,10 @@ export class Facade {
     }
 
     return Array.from(this.rootPaths)
-      .map(v => filePath.match(v))
+      .map(v => {
+          const regRep = new RegExp(v.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'))
+          return filePath.match(regRep)
+      })
       .filter(v => !!v)[0][0]
   }
 
