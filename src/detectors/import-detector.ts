@@ -48,6 +48,12 @@ export class ImportDetector extends AbstractDetector {
       return []
     }
 
+    if (!node.importClause.namedBindings) {
+      // default import
+      // e.g.) import assert from 'assert';
+      return []
+    }
+
     if (!isNamedImports(node.importClause.namedBindings)) {
       return []
     }
