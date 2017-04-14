@@ -1,4 +1,7 @@
-# 1.0.0-beta.3 (2017-03-14)
+# 1.0.0-beta.4 (2017-04-14)
+- Rename `ng-testbedder` to `ngx-testbedder`
+
+# 1.0.0-beta.3 (2017-04-14)
 - Fix for Windows
 
 # 1.0.0-beta.2 (2017-03-08)

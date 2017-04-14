@@ -1,6 +1,6 @@
 {
   "name": "ngx-testbedder",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "bin": {
     "testbedder": "index.js"
