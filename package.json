@@ -1,12 +1,12 @@
 {
-  "name": "ng-testbedder",
+  "name": "ngx-testbedder",
   "version": "1.0.0-beta.3",
   "author": "OKUNOKENTARO <okunokentaro@me.com>",
   "bin": {
     "testbedder": "index.js"
   },
   "bugs": {
-    "url": "https://github.com/armorik83/ng-testbedder/issues"
+    "url": "https://github.com/armorik83/ngx-testbedder/issues"
   },
   "dependencies": {
     "archy": "^1.0.0",
@@ -34,7 +34,7 @@
     "lib/src",
     "index.js"
   ],
-  "homepage": "https://github.com/armorik83/ng-testbedder",
+  "homepage": "https://github.com/armorik83/ngx-testbedder",
   "keywords": [
     "angular",
     "mock",
@@ -45,7 +45,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/armorik83/ng-testbedder.git"
+    "url": "https://github.com/armorik83/ngx-testbedder.git"
   },
   "scripts": {
     "build": "tsc -p ./ && cp ./fixture/tsconfig.json ./lib/fixture/tsconfig.json",

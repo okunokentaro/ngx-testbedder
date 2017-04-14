@@ -1,6 +1,6 @@
-# ng-testbedder
+# ngx-testbedder
 
-`ng-testbedder` helps you to write the TestBed for an Angular (2.0+) application.
+`ngx-testbedder` helps you to write the TestBed for an Angular (2.0+) application.
 
 It displays a tree based on dependencies of a given file to this command. In addition, as you write integration tests in an Angular applications you can select the real modules and mock modules to use for testing. Then, the import statement necessary for that purpose and providers for a test bed are generated and output on the screen.
 
@@ -31,14 +31,14 @@ To complete, check `Done` and press the Enter key. Then, the result will be outp
 
 ## Installation
 
-You can install `ng-testbedder` command using npm.
+You can install `ngx-testbedder` command using npm.
 
 ```
-$ npm install --global ng-testbedder
+$ npm install --global ngx-testbedder
 
 # or to local
 
-$ npm install --save-dev ng-testbedder
+$ npm install --save-dev ngx-testbedder
 
 ```
 
@@ -126,4 +126,4 @@ $ testbedder [TypeScript file path] [Options]
 
 MIT © [OKUNOKENTARO](https://github.com/armorik83)
 
-[demo]: https://raw.githubusercontent.com/armorik83/ng-testbedder/master/doc/demo.gif
+[demo]: https://raw.githubusercontent.com/armorik83/ngx-testbedder/master/doc/demo.gif
